@@ -15,6 +15,7 @@
     "expo": "^57.0.22",
     "expo-haptics": "~57.0.3",
     "expo-splash-screen": "~57.0.9",
+    "expo-sqlite": "~57.0.3",
     "expo-status-bar": "~57.0.1",
     "nativewind": "latest",
     "react": "19.2.3",
