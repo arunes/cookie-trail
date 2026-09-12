@@ -3,8 +3,10 @@ import { StatusBar } from 'expo-status-bar';
 import { useCallback, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import Toast from 'react-native-toast-message';
 import { runMigrations } from './data/migration';
 import { SwipeableEventRow } from 'components/SwipeableEventRow';
+import { ToastHost } from 'components/toastConfig';
 import { getEventTypes } from './data/events';
 import './global.css';
 import { EventOption, EventType } from './data/models';
@@ -12,10 +14,6 @@ import { EventOption, EventType } from './data/models';
 runMigrations();
 
 const events = getEventTypes();
-function handleEvent(eventType: string, option: string) {
-  console.log(`${new Date().toISOString()} — ${eventType} / ${option}`);
-}
-
 export default function App() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
@@ -25,6 +23,15 @@ export default function App() {
 
   const triggerEvent = useCallback((event: EventType, option: EventOption) => {
     console.log(`${new Date().toISOString()} — ${event.id} / ${option.id}`);
+
+    Toast.show({
+      type: 'event',
+      text1: `${event.label} · ${option.label}`,
+      text2: new Date().toLocaleTimeString(undefined, {
+        hour: 'numeric',
+        minute: '2-digit',
+      }),
+    });
 
     setExpandedId(null);
   }, []);
@@ -79,6 +86,8 @@ export default function App() {
             </Pressable>
           </View>
         </ScrollView>
+
+        <ToastHost />
       </SafeAreaView>
     </SafeAreaProvider>
   );
