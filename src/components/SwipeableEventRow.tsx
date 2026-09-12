@@ -1,9 +1,9 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
-import { useMemo, useRef } from 'react';
+import { useMemo, useState } from 'react';
 import { Animated, PanResponder, Pressable, StyleSheet, Text, View } from 'react-native';
 
-import type { EventOption, EventType } from '../data/models';
+import type { EventOption, EventType } from '@/data/models';
 
 type SwipeableEventRowProps = {
   event: EventType;
@@ -16,9 +16,11 @@ const SWIPE_LIMIT = 110;
 const COMMIT_THRESHOLD = 76;
 
 export function SwipeableEventRow({ event, expanded, onToggle, onAction }: SwipeableEventRowProps) {
-  const translateX = useRef(new Animated.Value(0)).current;
-  const armedRef = useRef<'none' | 'left' | 'right'>('none');
-  const armedProgress = useRef(new Animated.Value(0)).current;
+  // useState with a lazy initializer (not useRef, which the react-hooks/refs
+  // lint rule rejects during render): the Animated.Value instances must be
+  // stable across renders so the PanResponder below is created exactly once.
+  const [translateX] = useState(() => new Animated.Value(0));
+  const [armedProgress] = useState(() => new Animated.Value(0));
 
   const rightOption = event.options.find((option) => option.swipe === 'right');
 
@@ -27,78 +29,103 @@ export function SwipeableEventRow({ event, expanded, onToggle, onAction }: Swipe
   const rightLimit = rightOption ? SWIPE_LIMIT : 0;
   const leftLimit = leftOption ? SWIPE_LIMIT : 0;
 
-  const panResponder = useMemo(
-    () =>
-      PanResponder.create({
-        onMoveShouldSetPanResponder: (_, gesture) =>
-          Math.abs(gesture.dx) > 8 && Math.abs(gesture.dx) > Math.abs(gesture.dy) * 1.5,
+  const panResponder = useMemo(() => {
+    // Armed state as a mutable holder created once per PanResponder, NOT
+    // component state: it must not trigger re-renders, because re-creating the
+    // PanResponder while a drag is in flight breaks touch tracking (the row
+    // stops following the finger).
+    const armed = { side: 'none' as 'none' | 'left' | 'right' };
 
-        onPanResponderMove: (_, gesture) => {
-          const x = Math.max(-leftLimit, Math.min(rightLimit, gesture.dx));
+    return PanResponder.create({
+      onMoveShouldSetPanResponder: (_, gesture) =>
+        Math.abs(gesture.dx) > 8 && Math.abs(gesture.dx) > Math.abs(gesture.dy) * 1.5,
 
-          translateX.setValue(x);
+      onPanResponderGrant: () => {
+        armed.side = 'none';
+      },
 
-          const side =
-            rightOption && x >= COMMIT_THRESHOLD
-              ? 'right'
-              : leftOption && x <= -COMMIT_THRESHOLD
-                ? 'left'
-                : 'none';
+      onPanResponderMove: (_, gesture) => {
+        const x = Math.max(-leftLimit, Math.min(rightLimit, gesture.dx));
 
-          if (side !== armedRef.current) {
-            armedRef.current = side;
+        translateX.setValue(x);
 
-            if (side !== 'none') {
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
-            }
+        const side =
+          rightOption && x >= COMMIT_THRESHOLD
+            ? 'right'
+            : leftOption && x <= -COMMIT_THRESHOLD
+              ? 'left'
+              : 'none';
 
-            Animated.spring(armedProgress, {
-              toValue: side === 'none' ? 0 : 1,
-              useNativeDriver: true,
-            }).start();
-          }
-        },
+        if (side !== armed.side) {
+          armed.side = side;
 
-        onPanResponderRelease: () => {
-          const side = armedRef.current;
-
-          armedRef.current = 'none';
-
-          Animated.spring(armedProgress, {
-            toValue: 0,
-            useNativeDriver: true,
-          }).start();
-
-          if (side === 'right' && rightOption) {
-            onAction(event, rightOption);
-          } else if (side === 'left' && leftOption) {
-            onAction(event, leftOption);
+          if (side !== 'none') {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
           }
 
-          Animated.spring(translateX, {
-            toValue: 0,
-            friction: 8,
-            tension: 65,
-            useNativeDriver: true,
-          }).start();
-        },
-
-        onPanResponderTerminate: () => {
-          armedRef.current = 'none';
-
           Animated.spring(armedProgress, {
-            toValue: 0,
+            toValue: side === 'none' ? 0 : 1,
             useNativeDriver: true,
           }).start();
+        }
+      },
 
-          Animated.spring(translateX, {
-            toValue: 0,
-            useNativeDriver: true,
-          }).start();
-        },
-      }),
-    [event, onAction, translateX, armedProgress, rightOption, leftOption, rightLimit, leftLimit]
-  );
+      // Commit from the release geometry itself (not the tracked flag): this is
+      // where the finger actually was when the gesture ended.
+      onPanResponderRelease: (_, gesture) => {
+        const x = Math.max(-leftLimit, Math.min(rightLimit, gesture.dx));
+        const side =
+          x >= COMMIT_THRESHOLD && rightOption
+            ? 'right'
+            : x <= -COMMIT_THRESHOLD && leftOption
+              ? 'left'
+              : 'none';
+
+        armed.side = 'none';
+
+        Animated.spring(armedProgress, {
+          toValue: 0,
+          useNativeDriver: true,
+        }).start();
+
+        if (side === 'right' && rightOption) {
+          onAction(event, rightOption);
+        } else if (side === 'left' && leftOption) {
+          onAction(event, leftOption);
+        }
+
+        Animated.spring(translateX, {
+          toValue: 0,
+          friction: 8,
+          tension: 65,
+          useNativeDriver: true,
+        }).start();
+      },
+
+      onPanResponderTerminate: () => {
+        armed.side = 'none';
+
+        Animated.spring(armedProgress, {
+          toValue: 0,
+          useNativeDriver: true,
+        }).start();
+
+        Animated.spring(translateX, {
+          toValue: 0,
+          useNativeDriver: true,
+        }).start();
+      },
+    });
+  }, [
+    event,
+    onAction,
+    translateX,
+    armedProgress,
+    rightOption,
+    leftOption,
+    rightLimit,
+    leftLimit,
+  ]);
 
   const armedIconScale = armedProgress.interpolate({
     inputRange: [0, 1],
