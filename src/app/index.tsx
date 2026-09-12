@@ -1,14 +1,15 @@
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useCallback, useState } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
+import { router } from 'expo-router';
 import Toast from 'react-native-toast-message';
+
 import { SwipeableEventRow } from '@/components/SwipeableEventRow';
-import { logEvent, getEventTypes } from '@/data/events';
+import { getEventTypes, logEvent } from '@/data/events';
 import { EventOption, EventType } from '@/data/models';
 
 export default function Home() {
-  // Must run after runMigrations() (called in App's module body). Calling it at
-  // module scope here would run before that, since imported modules evaluate first.
+  // Read after migrations have run (see src/app/_layout.tsx).
   const [events] = useState(getEventTypes);
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
@@ -18,7 +19,6 @@ export default function Home() {
 
   const triggerEvent = useCallback((event: EventType, option: EventOption) => {
     logEvent(event.id, option.id);
-    console.log(`${new Date().toISOString()} — ${event.id} / ${option.id}`);
 
     Toast.show({
       type: 'event',
@@ -33,7 +33,30 @@ export default function Home() {
   }, []);
 
   return (
-    <>
+    <ScrollView
+      className="flex-1"
+      contentContainerClassName="px-4 pb-10"
+      showsVerticalScrollIndicator={false}>
+      {/* Header */}
+      <View className="flex-row items-center justify-between py-5">
+        <View className="flex-1 flex-row items-center">
+          <MaterialCommunityIcons name="paw" size={27} color="#825d3d" />
+          <View className="ml-2">
+            <Text className="text-[25px] font-bold tracking-[-1px] text-[#211914]">
+              CookieTrail
+            </Text>
+            <Text className="text-[12px] text-[#aaa6a3]">A happier, healthier pup</Text>
+          </View>
+        </View>
+
+        <Pressable
+          className="h-11 w-11 items-center justify-center rounded-full bg-[#1478e8]"
+          accessibilityLabel="Open settings"
+          onPress={() => router.push('/settings')}>
+          <Ionicons name="settings" size={24} color="#ffffff" />
+        </Pressable>
+      </View>
+
       {/* Events */}
       <View className="gap-2.5">
         {events.map((event) => (
@@ -53,6 +76,6 @@ export default function Home() {
 
         <Text className="ml-2 text-[17px] font-medium text-[#43218d]">Add Custom Event</Text>
       </Pressable>
-    </>
+    </ScrollView>
   );
 }

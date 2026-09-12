@@ -3,9 +3,7 @@
     "name": "my-expo-app",
     "slug": "my-expo-app",
     "version": "1.0.0",
-    "web": {
-      "favicon": "./assets/favicon.png"
-    },
+    "scheme": "cookietrail",
     "experiments": {
       "tsconfigPaths": true
     },
