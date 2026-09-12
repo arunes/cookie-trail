@@ -10,6 +10,7 @@ import { ToastHost } from 'components/toastConfig';
 import { getEventTypes } from './data/events';
 import './global.css';
 import { EventOption, EventType } from './data/models';
+import { logEvent } from './data/events';
 
 runMigrations();
 
@@ -22,6 +23,7 @@ export default function App() {
   }, []);
 
   const triggerEvent = useCallback((event: EventType, option: EventOption) => {
+    logEvent(event.id, option.id);
     console.log(`${new Date().toISOString()} — ${event.id} / ${option.id}`);
 
     Toast.show({

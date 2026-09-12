@@ -2,6 +2,26 @@ import type { EventType, EventOption, IconName, SwipeDirection } from './models'
 import type { EventTypeRow, EventOptionRow } from './database';
 import { db } from './database';
 
+export function logEvent(
+  eventTypeId: string,
+  optionId: string,
+  occurredAt = Date.now(),
+) {
+  db.runSync(
+    `
+      INSERT INTO event_log (
+        event_type_id,
+        option_id,
+        occurred_at
+      )
+      VALUES (?, ?, ?)
+    `,
+    eventTypeId,
+    optionId,
+    occurredAt,
+  );
+}
+
 export function getEventTypes(): EventType[] {
   const eventRows = db.getAllSync<EventTypeRow>(`
     SELECT *
