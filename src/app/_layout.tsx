@@ -1,6 +1,7 @@
 import { Stack } from 'expo-router';
-
-import { AppShell } from '@/components/AppShell';
+import { StatusBar } from 'expo-status-bar';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { ToastHost } from '@/toastConfig';
 import { runMigrations } from '@/data/migration';
 
 // Loads the compiled NativeWind stylesheet — without this import every
@@ -13,13 +14,17 @@ runMigrations();
 
 export default function RootLayout() {
   return (
-    <AppShell>
-      <Stack
-        screenOptions={{
-          headerShown: false,
-          contentStyle: { backgroundColor: '#fbf8f5' },
-        }}
-      />
-    </AppShell>
+    <SafeAreaProvider>
+      <SafeAreaView className="flex-1 bg-[#fbf8f5]" edges={['top', 'bottom']}>
+        <StatusBar style="dark" />
+        <Stack
+          screenOptions={{
+            headerShown: false,
+            contentStyle: { backgroundColor: '#fbf8f5' },
+          }}
+        />
+        <ToastHost />
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 }
