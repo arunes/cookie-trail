@@ -7,7 +7,7 @@ export type SwipeDirection = 'left' | 'right';
 export type Pet = {
   id: number;
   name: string;
-}
+};
 
 export type EventOption = {
   id: string;

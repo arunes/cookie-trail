@@ -35,4 +35,3 @@ Future user-created event types are plausible, as are simple scheduling and hist
 ## Product discipline
 
 Prefer a fast, understandable workflow over breadth. A proposed feature should serve the core logging/history/upcoming loop and have an explicit product decision behind it. Keep possible future ideas labeled as such; do not turn them into V1 commitments by documenting or scaffolding them prematurely.
-

@@ -54,4 +54,3 @@ All application timestamps must be SQLite `INTEGER` values containing Unix epoch
 V1 has one default pet and no multi-pet interface. Keeping `pets` and `event_log.pet_id` now prevents history from permanently assuming a single pet; it does not authorize pet switching, profile systems, or per-pet Event Type configuration. Add per-pet definition/configuration only after an explicit design decision.
 
 The project is pre-release and current development data is disposable. Early migrations may periodically be consolidated or rebuilt to keep the baseline intelligible instead of preserving migration archaeology. Once production or user data exists, migrations must become additive/data-preserving and must not rely on destructive resets.
-

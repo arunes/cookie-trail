@@ -51,4 +51,3 @@ Read the focused documentation before changing behavior:
 - Do not add Stats, charts, analytics dashboards, multi-pet UI, elaborate pet profiles, complex predictions, or a large Settings hierarchy unless explicitly requested.
 - Keep current state, decided direction, and possible future ideas distinct in both implementation discussions and documentation.
 - Update the relevant `.docs/` file when an approved product or architecture decision changes. Keep documentation concise; do not create boilerplate for its own sake.
-

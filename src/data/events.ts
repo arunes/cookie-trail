@@ -6,7 +6,7 @@ export function logEvent(
   petId: number,
   eventTypeId: string,
   optionId: string,
-  occurredAt = Date.now(),
+  occurredAt = Date.now()
 ) {
   db.runSync(
     `
@@ -21,7 +21,7 @@ export function logEvent(
     petId,
     eventTypeId,
     optionId,
-    occurredAt,
+    occurredAt
   );
 }
 
@@ -52,17 +52,13 @@ export function getEventTypes(): EventType[] {
 
     options: optionRows
       .filter((option) => option.event_type_id === row.id)
-      .map(
-        (option): EventOption => ({
-          id: option.id,
-          label: option.label,
-          icon: option.icon ? (option.icon as IconName) : undefined,
-          color: option.color ?? undefined,
-          bg: option.bg ?? undefined,
-          swipe: option.swipe_direction
-            ? (option.swipe_direction as SwipeDirection)
-            : undefined,
-        }),
-      ),
+      .map((option): EventOption => ({
+        id: option.id,
+        label: option.label,
+        icon: option.icon ? (option.icon as IconName) : undefined,
+        color: option.color ?? undefined,
+        bg: option.bg ?? undefined,
+        swipe: option.swipe_direction ? (option.swipe_direction as SwipeDirection) : undefined,
+      })),
   }));
 }

@@ -35,4 +35,3 @@ Event colors have different ownership. Colors stored on `event_types` and `event
 Application/design colors -> semantic theme tokens
 Event/customizable colors -> event data in SQLite
 ```
-

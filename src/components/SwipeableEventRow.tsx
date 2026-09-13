@@ -117,16 +117,7 @@ export function SwipeableEventRow({ event, expanded, onToggle, onAction }: Swipe
         }).start();
       },
     });
-  }, [
-    event,
-    onAction,
-    translateX,
-    armedProgress,
-    rightOption,
-    leftOption,
-    rightLimit,
-    leftLimit,
-  ]);
+  }, [event, onAction, translateX, armedProgress, rightOption, leftOption, rightLimit, leftLimit]);
 
   const armedIconScale = armedProgress.interpolate({
     inputRange: [0, 1],

@@ -19,20 +19,23 @@ export default function Home() {
     setExpandedId((current) => (current === id ? null : id));
   }, []);
 
-  const triggerEvent = useCallback((event: EventType, option: EventOption) => {
-    logEvent(pet.id, event.id, option.id);
+  const triggerEvent = useCallback(
+    (event: EventType, option: EventOption) => {
+      logEvent(pet.id, event.id, option.id);
 
-    Toast.show({
-      type: 'event',
-      text1: `${event.label} · ${option.label}`,
-      text2: new Date().toLocaleTimeString(undefined, {
-        hour: 'numeric',
-        minute: '2-digit',
-      }),
-    });
+      Toast.show({
+        type: 'event',
+        text1: `${event.label} · ${option.label}`,
+        text2: new Date().toLocaleTimeString(undefined, {
+          hour: 'numeric',
+          minute: '2-digit',
+        }),
+      });
 
-    setExpandedId(null);
-  }, [pet.id]);
+      setExpandedId(null);
+    },
+    [pet.id]
+  );
 
   return (
     <ScrollView
@@ -44,15 +47,15 @@ export default function Home() {
         <View className="flex-1 flex-row items-center">
           <MaterialCommunityIcons name="paw" size={27} color={colors.brand} />
           <View className="ml-2">
-            <Text className="text-foreground text-[25px] font-bold tracking-[-1px]">
+            <Text className="text-[25px] font-bold tracking-[-1px] text-foreground">
               CookieTrail
             </Text>
-            <Text className="text-foreground-muted text-[12px]">A happier, healthier pup</Text>
+            <Text className="text-[12px] text-foreground-muted">A happier, healthier pup</Text>
           </View>
         </View>
 
         <Pressable
-          className="bg-primary h-11 w-11 items-center justify-center rounded-full"
+          className="h-11 w-11 items-center justify-center rounded-full bg-primary"
           accessibilityLabel="Open settings"
           onPress={() => router.push('/settings')}>
           <Ionicons name="settings" size={24} color={colors['on-primary']} />
@@ -71,13 +74,6 @@ export default function Home() {
           />
         ))}
       </View>
-
-      {/* Add custom event */}
-      <Pressable className="bg-accent-surface mt-6 h-16 flex-row items-center justify-center rounded-[22px]">
-        <Ionicons name="add" size={28} color={colors.accent} />
-
-        <Text className="text-accent ml-2 text-[17px] font-medium">Add Custom Event</Text>
-      </Pressable>
     </ScrollView>
   );
 }

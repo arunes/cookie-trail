@@ -57,4 +57,3 @@ There is no service layer, remote API, state-management framework, or reactive d
 - App/package/bundle identifiers still use generated `my-expo-app`/`com.anonymous.myexpoapp` values rather than CookieTrail branding.
 
 These are recorded discrepancies, not authorization to fix them.
-
