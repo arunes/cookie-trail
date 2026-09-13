@@ -6,12 +6,13 @@ import Toast from 'react-native-toast-message';
 
 import { SwipeableEventRow } from '@/components/SwipeableEventRow';
 import { getEventTypes, logEvent } from '@/data/events';
+import { getActivePet } from '@/data/pets';
 import { colors } from '@/theme/tokens';
 import { EventOption, EventType } from '@/data/models';
 
 export default function Home() {
-  // Read after migrations have run (see src/app/_layout.tsx).
   const [events] = useState(getEventTypes);
+  const [pet] = useState(getActivePet);
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const toggleEvent = useCallback((id: string) => {
@@ -19,7 +20,7 @@ export default function Home() {
   }, []);
 
   const triggerEvent = useCallback((event: EventType, option: EventOption) => {
-    logEvent(event.id, option.id);
+    logEvent(pet.id, event.id, option.id);
 
     Toast.show({
       type: 'event',
@@ -31,7 +32,7 @@ export default function Home() {
     });
 
     setExpandedId(null);
-  }, []);
+  }, [pet.id]);
 
   return (
     <ScrollView
@@ -43,15 +44,15 @@ export default function Home() {
         <View className="flex-1 flex-row items-center">
           <MaterialCommunityIcons name="paw" size={27} color={colors.brand} />
           <View className="ml-2">
-            <Text className="text-[25px] font-bold tracking-[-1px] text-foreground">
+            <Text className="text-foreground text-[25px] font-bold tracking-[-1px]">
               CookieTrail
             </Text>
-            <Text className="text-[12px] text-foreground-muted">A happier, healthier pup</Text>
+            <Text className="text-foreground-muted text-[12px]">A happier, healthier pup</Text>
           </View>
         </View>
 
         <Pressable
-          className="h-11 w-11 items-center justify-center rounded-full bg-primary"
+          className="bg-primary h-11 w-11 items-center justify-center rounded-full"
           accessibilityLabel="Open settings"
           onPress={() => router.push('/settings')}>
           <Ionicons name="settings" size={24} color={colors['on-primary']} />
@@ -72,10 +73,10 @@ export default function Home() {
       </View>
 
       {/* Add custom event */}
-      <Pressable className="mt-6 h-16 flex-row items-center justify-center rounded-[22px] bg-accent-surface">
+      <Pressable className="bg-accent-surface mt-6 h-16 flex-row items-center justify-center rounded-[22px]">
         <Ionicons name="add" size={28} color={colors.accent} />
 
-        <Text className="ml-2 text-[17px] font-medium text-accent">Add Custom Event</Text>
+        <Text className="text-accent ml-2 text-[17px] font-medium">Add Custom Event</Text>
       </Pressable>
     </ScrollView>
   );

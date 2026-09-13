@@ -3,6 +3,7 @@ import type { EventTypeRow, EventOptionRow } from './database';
 import { db } from './database';
 
 export function logEvent(
+  petId: number,
   eventTypeId: string,
   optionId: string,
   occurredAt = Date.now(),
@@ -10,12 +11,14 @@ export function logEvent(
   db.runSync(
     `
       INSERT INTO event_log (
+        pet_id,
         event_type_id,
         option_id,
         occurred_at
       )
-      VALUES (?, ?, ?)
+      VALUES (?, ?, ?, ?)
     `,
+    petId,
     eventTypeId,
     optionId,
     occurredAt,

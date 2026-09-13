@@ -1,5 +1,11 @@
 import * as SQLite from 'expo-sqlite';
 
+
+export type PetRow = {
+  id: number;
+  name: string;
+}
+
 export type EventTypeRow = {
     id: string;
     label: string;
