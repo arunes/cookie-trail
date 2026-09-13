@@ -2,6 +2,8 @@ import { StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Toast, { type ToastConfig } from 'react-native-toast-message';
 
+import { colors } from '@/theme/tokens';
+
 const toastConfig: ToastConfig = {
   event: ({ text1, text2 }) => (
     <View style={styles.container}>
@@ -33,9 +35,9 @@ const styles = StyleSheet.create({
     maxWidth: '90%',
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fffdfb',
+    backgroundColor: colors['surface-raised'],
     borderWidth: 1,
-    borderColor: '#e8e2dc',
+    borderColor: colors['border-strong'],
     borderRadius: 14,
     paddingVertical: 11,
     paddingHorizontal: 14,
@@ -49,19 +51,19 @@ const styles = StyleSheet.create({
 
   check: {
     marginRight: 8,
-    color: '#6f9f78',
+    color: colors.success,
     fontSize: 15,
     fontWeight: '700',
   },
 
   primary: {
-    color: '#211914',
+    color: colors.foreground,
     fontSize: 13,
     fontWeight: '600',
   },
 
   time: {
-    color: '#9b948e',
+    color: colors['foreground-secondary'],
     fontWeight: '500',
   },
 });

@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react';
 import { Animated, PanResponder, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import type { EventOption, EventType } from '@/data/models';
+import { colors } from '@/theme/tokens';
 
 type SwipeableEventRowProps = {
   event: EventType;
@@ -140,7 +141,7 @@ export function SwipeableEventRow({ event, expanded, onToggle, onAction }: Swipe
   });
 
   return (
-    <View className="overflow-hidden rounded-[20px] border border-[#f0ece8] bg-white shadow-sm">
+    <View className="overflow-hidden rounded-[20px] border border-border bg-surface shadow-sm">
       <View className="h-[68px] flex-row" {...panResponder.panHandlers}>
         {rightOption && (
           <Animated.View
@@ -149,7 +150,7 @@ export function SwipeableEventRow({ event, expanded, onToggle, onAction }: Swipe
               styles.actionStrip,
               styles.actionStripLeft,
               {
-                backgroundColor: rightOption.bg ?? '#f1efec',
+                backgroundColor: rightOption.bg ?? colors['option-action-surface'],
               },
             ]}>
             <Animated.View style={[styles.actionContent, { opacity: armedContentOpacity }]}>
@@ -161,7 +162,7 @@ export function SwipeableEventRow({ event, expanded, onToggle, onAction }: Swipe
                   <MaterialCommunityIcons
                     name={rightOption.icon}
                     size={18}
-                    color={rightOption.color ?? '#6b6b6b'}
+                    color={rightOption.color ?? colors['option-icon']}
                   />
                 )}
               </Animated.View>
@@ -169,7 +170,7 @@ export function SwipeableEventRow({ event, expanded, onToggle, onAction }: Swipe
               <Text
                 className="text-[13px] font-semibold"
                 style={{
-                  color: rightOption.color ?? '#505050',
+                  color: rightOption.color ?? colors['option-text'],
                 }}>
                 {rightOption.label}
               </Text>
@@ -184,7 +185,7 @@ export function SwipeableEventRow({ event, expanded, onToggle, onAction }: Swipe
               styles.actionStrip,
               styles.actionStripRight,
               {
-                backgroundColor: leftOption.bg ?? '#f1efec',
+                backgroundColor: leftOption.bg ?? colors['option-action-surface'],
               },
             ]}>
             <Animated.View style={[styles.actionContentRight, { opacity: armedContentOpacity }]}>
@@ -196,7 +197,7 @@ export function SwipeableEventRow({ event, expanded, onToggle, onAction }: Swipe
                   <MaterialCommunityIcons
                     name={leftOption.icon}
                     size={18}
-                    color={leftOption.color ?? '#6b6b6b'}
+                    color={leftOption.color ?? colors['option-icon']}
                   />
                 )}
               </Animated.View>
@@ -204,7 +205,7 @@ export function SwipeableEventRow({ event, expanded, onToggle, onAction }: Swipe
               <Text
                 className="text-[13px] font-semibold"
                 style={{
-                  color: leftOption.color ?? '#505050',
+                  color: leftOption.color ?? colors['option-text'],
                 }}>
                 {leftOption.label}
               </Text>
@@ -222,41 +223,41 @@ export function SwipeableEventRow({ event, expanded, onToggle, onAction }: Swipe
               <MaterialCommunityIcons name={event.icon} size={21} color={event.color} />
             </View>
 
-            <Text className="ml-3 text-[17px] font-semibold text-[#211914]">{event.label}</Text>
+            <Text className="ml-3 text-[17px] font-semibold text-foreground">{event.label}</Text>
 
             <View className="flex-1" />
 
             <MaterialCommunityIcons
               name={expanded ? 'chevron-down' : 'chevron-right'}
               size={20}
-              color="#d9d3cc"
+              color={colors['icon-muted']}
             />
           </Pressable>
         </Animated.View>
       </View>
 
       {expanded && (
-        <View className="flex-row flex-wrap gap-2 border-t border-[#f0ece8] p-3">
+        <View className="flex-row flex-wrap gap-2 border-t border-border p-3">
           {event.options.map((option) => (
             <Pressable
               key={option.id}
               onPress={() => onAction(event, option)}
               className="flex-row items-center gap-1.5 rounded-full px-3.5 py-2 active:opacity-60"
               style={{
-                backgroundColor: option.bg ?? '#f7f6f5',
+                backgroundColor: option.bg ?? colors['option-surface'],
               }}>
               {option.icon && (
                 <MaterialCommunityIcons
                   name={option.icon}
                   size={16}
-                  color={option.color ?? '#6b6b6b'}
+                  color={option.color ?? colors['option-icon']}
                 />
               )}
 
               <Text
                 className="text-[13px] font-semibold"
                 style={{
-                  color: option.color ?? '#505050',
+                  color: option.color ?? colors['option-text'],
                 }}>
                 {option.label}
               </Text>
@@ -307,6 +308,6 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     left: 0,
-    backgroundColor: '#ffffff',
+    backgroundColor: colors.surface,
   },
 });

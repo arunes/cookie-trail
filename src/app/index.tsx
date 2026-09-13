@@ -6,6 +6,7 @@ import Toast from 'react-native-toast-message';
 
 import { SwipeableEventRow } from '@/components/SwipeableEventRow';
 import { getEventTypes, logEvent } from '@/data/events';
+import { colors } from '@/theme/tokens';
 import { EventOption, EventType } from '@/data/models';
 
 export default function Home() {
@@ -40,20 +41,20 @@ export default function Home() {
       {/* Header */}
       <View className="flex-row items-center justify-between py-5">
         <View className="flex-1 flex-row items-center">
-          <MaterialCommunityIcons name="paw" size={27} color="#825d3d" />
+          <MaterialCommunityIcons name="paw" size={27} color={colors.brand} />
           <View className="ml-2">
-            <Text className="text-[25px] font-bold tracking-[-1px] text-[#211914]">
+            <Text className="text-[25px] font-bold tracking-[-1px] text-foreground">
               CookieTrail
             </Text>
-            <Text className="text-[12px] text-[#aaa6a3]">A happier, healthier pup</Text>
+            <Text className="text-[12px] text-foreground-muted">A happier, healthier pup</Text>
           </View>
         </View>
 
         <Pressable
-          className="h-11 w-11 items-center justify-center rounded-full bg-[#1478e8]"
+          className="h-11 w-11 items-center justify-center rounded-full bg-primary"
           accessibilityLabel="Open settings"
           onPress={() => router.push('/settings')}>
-          <Ionicons name="settings" size={24} color="#ffffff" />
+          <Ionicons name="settings" size={24} color={colors['on-primary']} />
         </Pressable>
       </View>
 
@@ -71,10 +72,10 @@ export default function Home() {
       </View>
 
       {/* Add custom event */}
-      <Pressable className="mt-6 h-16 flex-row items-center justify-center rounded-[22px] bg-[#eee5ff]">
-        <Ionicons name="add" size={28} color="#43218d" />
+      <Pressable className="mt-6 h-16 flex-row items-center justify-center rounded-[22px] bg-accent-surface">
+        <Ionicons name="add" size={28} color={colors.accent} />
 
-        <Text className="ml-2 text-[17px] font-medium text-[#43218d]">Add Custom Event</Text>
+        <Text className="ml-2 text-[17px] font-medium text-accent">Add Custom Event</Text>
       </Pressable>
     </ScrollView>
   );
