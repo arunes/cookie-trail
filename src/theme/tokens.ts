@@ -44,6 +44,7 @@ export const colors = {
 
   // Status
   success: '#6f9f78',
+  danger: '#b3372f',
 } as const;
 
 export type ColorToken = keyof typeof colors;

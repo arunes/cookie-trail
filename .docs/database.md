@@ -36,7 +36,7 @@ Defines choices belonging to an Event Type. The composite primary key is `(event
 
 Records occurrences. Each row has an autoincrementing ID and required `pet_id`, `event_type_id`, `option_id`, and `occurred_at`, plus an optional note. Foreign keys link the pet, event type, and the type/option pair. Indexes support history ordered by pet/time and history filtered by pet/type/time.
 
-This separation is intentional: Event Types and options define what can happen; the event log records what actually happened to a pet.
+This separation is intentional: Event Types and options define what can happen; the event log records what actually happened to a pet. History can update an occurrence timestamp or transactionally delete one or more occurrences, with every mutation scoped to the active pet.
 
 ## Timestamp convention
 

@@ -124,3 +124,24 @@ export function getEventHistory(petId: number, limit: number, offset: number): R
     optionLabel: row.option_label,
   }));
 }
+
+export function updateEventTimestamp(eventLogId: number, petId: number, occurredAt: number) {
+  db.runSync(
+    'UPDATE event_log SET occurred_at = ? WHERE id = ? AND pet_id = ?',
+    occurredAt,
+    eventLogId,
+    petId
+  );
+}
+
+export function deleteEventLogs(eventLogIds: number[], petId: number) {
+  if (eventLogIds.length === 0) {
+    return;
+  }
+
+  db.withTransactionSync(() => {
+    eventLogIds.forEach((eventLogId) => {
+      db.runSync('DELETE FROM event_log WHERE id = ? AND pet_id = ?', eventLogId, petId);
+    });
+  });
+}

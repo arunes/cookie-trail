@@ -11,7 +11,7 @@ Each event row supports two input paths:
 
 After a selection, Home writes the event for the default pet and displays a bottom toast with the event, option, and localized time.
 
-History shows the default pet's complete event history and loads additional rows as the user scrolls. Upcoming and custom Event Type creation are not implemented. Settings currently contains only back navigation, a title, and “Nothing to configure yet.”
+History shows the default pet's complete event history and loads additional rows as the user scrolls. Tapping a row opens a bottom-sheet editor for its date and time. Long-pressing a row enters multi-selection; a visible Select action provides the same mode, subsequent taps toggle rows, and a floating destructive action confirms before deleting the selected events. Upcoming and custom Event Type creation are not implemented. Settings currently contains only back navigation, a title, and “Nothing to configure yet.”
 
 ## Decided interaction direction
 
@@ -27,7 +27,7 @@ Stats navigation, charts, and dashboards are excluded from V1. The bottom menu r
 
 The UI uses NativeWind/Tailwind-style `className` utilities plus React Native inline styles and `StyleSheet`. Application colors are centralized in `src/theme/tokens.ts` as one canonical semantic palette: `tailwind.config.js` imports that object to register utility classes (`bg-background`, `text-foreground`, `border-border`, …), and screens/components import the same `colors` object wherever a raw value is required (icon `color` props, `StyleSheet`, navigator `contentStyle`). Fallback presentation for options that define no colors of their own uses the `option-*` tokens; colors stored in SQLite remain data. Typography, spacing, radius, heights, and icon sizes are not tokenized — local values stay local — and the toast shadow color and native splash/adaptive-icon colors in `app.json` remain literal.
 
-The token set uses roles such as background, surface, raised surface, primary/secondary/muted foreground, primary/on-primary, border, accent/accent-surface, success, and brand. Token values must be available to utility styling and to TypeScript because icon and style props sometimes require raw colors. Prefer clarity and a single canonical source where practical; do not introduce dark mode, multiple themes, or a large design system without a request. Local spacing and radius values may remain local when they are not shared decisions.
+The token set uses roles such as background, surface, raised surface, primary/secondary/muted foreground, primary/on-primary, border, accent/accent-surface, success, danger, and brand. Token values must be available to utility styling and to TypeScript because icon and style props sometimes require raw colors. Prefer clarity and a single canonical source where practical; do not introduce dark mode, multiple themes, or a large design system without a request. Local spacing and radius values may remain local when they are not shared decisions.
 
 Event colors have different ownership. Colors stored on `event_types` and `event_options` are data used to distinguish or customize events. They must not be folded automatically into the application theme:
 

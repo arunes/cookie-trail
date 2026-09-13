@@ -32,7 +32,7 @@ The `@/` TypeScript alias points to `src/`. `app.json`, Babel, Metro, Tailwind, 
 
 Importing the root layout calls `runMigrations()` synchronously before rendering the route stack. The root stack contains a two-screen tab group plus Settings outside the tabs. `database.ts` opens the local `cookietrail.db` synchronously. Home initializes its event definitions once by calling `getEventTypes()`, which reads visible event types and all options, maps SQLite rows to UI models, and supplies each definition to `SwipeableEventRow`.
 
-A row owns the gesture mechanics. It clamps horizontal movement, gives haptic feedback after a threshold, and commits the configured left or right option on release. Tapping expands the same row to expose all options. Home calls `logEvent`, shows a localized-time confirmation toast, and collapses the row. History refreshes when its tab gains focus and joins occurrences to their type and option definitions for display.
+A Home row owns the gesture mechanics. It clamps horizontal movement, gives haptic feedback after a threshold, and commits the configured left or right option on release. Tapping expands the same row to expose all options. Home calls `logEvent`, shows a localized-time confirmation toast, and collapses the row. History refreshes when its tab gains focus and joins occurrences to their type and option definitions for display. History owns timestamp editing and selection state; timestamp updates and pet-scoped transactional bulk deletes remain in the data layer.
 
 There is no service layer, remote API, state-management framework, or reactive database subscription. There are also no automated tests or test command. Keep new layers proportional to an approved need rather than adding them preemptively.
 

@@ -64,6 +64,12 @@ This is a lightweight record of established product and architecture decisions. 
 
 **Why:** Logging and reviewing history are the two primary surfaces, while administration remains secondary.
 
+## Edit and delete history deliberately
+
+**Decision:** A normal History-row tap edits only its timestamp. Long-press or the visible Select action enters multi-selection, and bulk deletion requires destructive confirmation.
+
+**Why:** Editing stays lightweight, while explicit selection and confirmation reduce accidental irreversible deletion.
+
 ## Centralize semantic application colors
 
 **Decision:** Application visuals should use semantic theme tokens with access from utilities and TypeScript. Event Type/option colors remain database data rather than theme tokens.
