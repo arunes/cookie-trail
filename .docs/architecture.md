@@ -12,7 +12,7 @@ src/
     _layout.tsx       root providers, stack, global CSS, migration startup
     index.tsx         Home route and event logging orchestration
     settings.tsx      placeholder Settings route
-    history.tsx       placeholder full-history route
+    history.tsx       infinite-scrolling full-history route
   components/
     SwipeableEventRow.tsx
   data/
@@ -50,7 +50,7 @@ There is no service layer, remote API, state-management framework, or reactive d
 
 ## Known implementation gaps
 
-- Full history and Upcoming are not implemented; the History route is currently an empty-state placeholder.
+- Upcoming is not implemented.
 - Settings says there is nothing to configure; Event Type administration is not implemented.
 - Home still presents an inert “Add Custom Event” control, contrary to its decided placement in Settings.
 - Event order is implicit `event_types.rowid`; reorder storage and drag interaction do not exist.

@@ -11,7 +11,7 @@ Each event row supports two input paths:
 
 After a selection, Home writes the event for the default pet, refreshes the five newest history rows, and displays a bottom toast with the event, option, and localized time. Recent rows show the localized time, event identity, and selected option in a compact timeline.
 
-The Recent Events “View All” action opens a placeholder History screen. Full history, Upcoming, custom Event Type creation, and reordering are not implemented. Settings currently contains only back navigation, a title, and “Nothing to configure yet.”
+The Recent Events “View All” action opens History, which shows the default pet's complete event history and loads additional rows as the user scrolls. Upcoming, custom Event Type creation, and reordering are not implemented. Settings currently contains only back navigation, a title, and “Nothing to configure yet.”
 
 ## Decided interaction direction
 

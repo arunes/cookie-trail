@@ -44,7 +44,7 @@ All application timestamps must be SQLite `INTEGER` values containing Unix epoch
 
 ## Known gaps and cautions
 
-- Recent history reads are scoped to the default pet and join event definitions/options for presentation.
+- Recent and full-history reads are scoped to the default pet and join event definitions/options for presentation. Full history is fetched in bounded batches as the user scrolls.
 - Foreign-key constraints are declared, but application initialization does not explicitly enable or verify SQLite foreign-key enforcement.
 - Home ordering currently relies on `event_types.rowid`; Event Types have no explicit sort column.
 - Custom Event Type lifecycle, including archival when log rows reference a definition, has not been designed or implemented.

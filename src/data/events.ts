@@ -74,7 +74,12 @@ type RecentEventRow = {
 };
 
 export function getRecentEvents(petId: number, limit: number): RecentEvent[] {
+  return getEventHistory(petId, limit, 0);
+}
+
+export function getEventHistory(petId: number, limit: number, offset: number): RecentEvent[] {
   const safeLimit = Math.max(0, Math.floor(limit));
+  const safeOffset = Math.max(0, Math.floor(offset));
 
   const rows = db.getAllSync<RecentEventRow>(
     `
@@ -94,10 +99,11 @@ export function getRecentEvents(petId: number, limit: number): RecentEvent[] {
         AND event_options.id = event_log.option_id
       WHERE event_log.pet_id = ?
       ORDER BY event_log.occurred_at DESC, event_log.id DESC
-      LIMIT ?
+      LIMIT ? OFFSET ?
     `,
     petId,
-    safeLimit
+    safeLimit,
+    safeOffset
   );
 
   return rows.map((row) => ({
