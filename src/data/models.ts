@@ -31,3 +31,13 @@ export type EventType = {
 
   options: EventOption[];
 };
+
+export type RecentEvent = {
+  id: number;
+  occurredAt: number;
+  eventLabel: string;
+  eventIcon: IconName;
+  eventColor: string;
+  eventBg: string;
+  optionLabel: string;
+};

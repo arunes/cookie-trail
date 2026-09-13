@@ -1,4 +1,4 @@
-import type { EventType, EventOption, IconName, SwipeDirection } from './models';
+import type { EventType, EventOption, IconName, RecentEvent, SwipeDirection } from './models';
 import type { EventTypeRow, EventOptionRow } from './database';
 import { db } from './database';
 
@@ -60,5 +60,53 @@ export function getEventTypes(): EventType[] {
         bg: option.bg ?? undefined,
         swipe: option.swipe_direction ? (option.swipe_direction as SwipeDirection) : undefined,
       })),
+  }));
+}
+
+type RecentEventRow = {
+  id: number;
+  occurred_at: number;
+  event_label: string;
+  event_icon: string;
+  event_color: string;
+  event_bg: string;
+  option_label: string;
+};
+
+export function getRecentEvents(petId: number, limit: number): RecentEvent[] {
+  const safeLimit = Math.max(0, Math.floor(limit));
+
+  const rows = db.getAllSync<RecentEventRow>(
+    `
+      SELECT
+        event_log.id,
+        event_log.occurred_at,
+        event_types.label AS event_label,
+        event_types.icon AS event_icon,
+        event_types.color AS event_color,
+        event_types.bg AS event_bg,
+        event_options.label AS option_label
+      FROM event_log
+      INNER JOIN event_types
+        ON event_types.id = event_log.event_type_id
+      INNER JOIN event_options
+        ON event_options.event_type_id = event_log.event_type_id
+        AND event_options.id = event_log.option_id
+      WHERE event_log.pet_id = ?
+      ORDER BY event_log.occurred_at DESC, event_log.id DESC
+      LIMIT ?
+    `,
+    petId,
+    safeLimit
+  );
+
+  return rows.map((row) => ({
+    id: row.id,
+    occurredAt: row.occurred_at,
+    eventLabel: row.event_label,
+    eventIcon: row.event_icon as IconName,
+    eventColor: row.event_color,
+    eventBg: row.event_bg,
+    optionLabel: row.option_label,
   }));
 }

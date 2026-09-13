@@ -14,7 +14,7 @@ This is a lightweight record of established product and architecture decisions. 
 
 **Why:** Historical data should not permanently assume one pet, but schema readiness does not justify building a multi-pet product.
 
-**Current gap:** The table and foreign key exist, but `logEvent` omits `pet_id`.
+**Status:** Implemented for the single default pet. Event writes and recent-history reads are pet-scoped; there is still no pet-management UI.
 
 ## Keep definitions separate from occurrences
 

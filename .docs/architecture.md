@@ -12,11 +12,12 @@ src/
     _layout.tsx       root providers, stack, global CSS, migration startup
     index.tsx         Home route and event logging orchestration
     settings.tsx      placeholder Settings route
+    history.tsx       placeholder full-history route
   components/
     SwipeableEventRow.tsx
   data/
     database.ts       SQLite connection and row types
-    events.ts         event definition reads and event-log writes
+    events.ts         event definition/history reads and event-log writes
     migration.ts      schema migrations and seed data
     models.ts         UI-facing event types
   global.css          NativeWind directives
@@ -29,7 +30,7 @@ The `@/` TypeScript alias points to `src/`. `app.json`, Babel, Metro, Tailwind, 
 
 Importing the root layout calls `runMigrations()` synchronously before rendering the route stack. `database.ts` opens the local `cookietrail.db` synchronously. Home initializes its event definitions once by calling `getEventTypes()`, which reads visible event types and all options, maps SQLite rows to UI models, and supplies each definition to `SwipeableEventRow`.
 
-A row owns the gesture mechanics. It clamps horizontal movement, gives haptic feedback after a threshold, and commits the configured left or right option on release. Tapping expands the same row to expose all options. Home calls `logEvent`, shows a localized-time confirmation toast, and collapses the row.
+A row owns the gesture mechanics. It clamps horizontal movement, gives haptic feedback after a threshold, and commits the configured left or right option on release. Tapping expands the same row to expose all options. Home calls `logEvent`, refreshes the default pet's five newest events, shows a localized-time confirmation toast, and collapses the row. The recent-event query joins occurrences to their type and option definitions for display.
 
 There is no service layer, remote API, state-management framework, or reactive database subscription. There are also no automated tests or test command. Keep new layers proportional to an approved need rather than adding them preemptively.
 
@@ -49,8 +50,7 @@ There is no service layer, remote API, state-management framework, or reactive d
 
 ## Known implementation gaps
 
-- `logEvent` does not provide the required `event_log.pet_id`, so logging against the current schema should fail. No default-pet lookup or selection path is wired into the write.
-- Home has no recent-history or Upcoming query/rendering.
+- Full history and Upcoming are not implemented; the History route is currently an empty-state placeholder.
 - Settings says there is nothing to configure; Event Type administration is not implemented.
 - Home still presents an inert “Add Custom Event” control, contrary to its decided placement in Settings.
 - Event order is implicit `event_types.rowid`; reorder storage and drag interaction do not exist.

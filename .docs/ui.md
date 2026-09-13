@@ -2,16 +2,16 @@
 
 ## Current state
 
-Home is a vertically scrolling screen with a brand header, a circular Settings button, five large full-width Event Type rows, and an “Add Custom Event” button. Event definitions and presentation data are loaded from SQLite once when Home mounts.
+Home is a vertically scrolling screen with a brand header, a circular Settings button, five large full-width Event Type rows, and a Recent Events section. Event definitions and presentation data are loaded from SQLite when Home mounts.
 
 Each event row supports two input paths:
 
 - Swipe right or left past a commit threshold to choose the option assigned to that direction. The row reveals an action strip and gives light haptic feedback when armed.
 - Tap to expand the row and show option pills, then tap any option.
 
-After a selection, Home attempts to write the event and displays a bottom toast with the event, option, and localized time. See [database.md](database.md) for the incomplete pet-scoped write path.
+After a selection, Home writes the event for the default pet, refreshes the five newest history rows, and displays a bottom toast with the event, option, and localized time. Recent rows show the localized time, event identity, and selected option in a compact timeline.
 
-Settings currently contains only back navigation, a title, and “Nothing to configure yet.” Recent history, Upcoming, custom Event Type creation, and reordering are not implemented.
+The Recent Events “View All” action opens a placeholder History screen. Full history, Upcoming, custom Event Type creation, and reordering are not implemented. Settings currently contains only back navigation, a title, and “Nothing to configure yet.”
 
 ## Decided interaction direction
 

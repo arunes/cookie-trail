@@ -44,7 +44,7 @@ All application timestamps must be SQLite `INTEGER` values containing Unix epoch
 
 ## Known gaps and cautions
 
-- The current `logEvent` insert supplies `event_type_id`, `option_id`, and `occurred_at` but omits required `pet_id`. The schema and write path are therefore inconsistent; pet-scoped logging is not complete.
+- Recent history reads are scoped to the default pet and join event definitions/options for presentation.
 - Foreign-key constraints are declared, but application initialization does not explicitly enable or verify SQLite foreign-key enforcement.
 - Home ordering currently relies on `event_types.rowid`; Event Types have no explicit sort column.
 - Custom Event Type lifecycle, including archival when log rows reference a definition, has not been designed or implemented.
