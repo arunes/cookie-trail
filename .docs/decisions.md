@@ -58,6 +58,12 @@ This is a lightweight record of established product and architecture decisions. 
 
 **Why:** Event history may enable analysis later, but those surfaces expand scope beyond the core loop.
 
+## Keep bottom navigation focused
+
+**Decision:** Use a persistent bottom menu containing only Home and History. Settings remains a secondary route opened from Home rather than a tab.
+
+**Why:** Logging and reviewing history are the two primary surfaces, while administration remains secondary.
+
 ## Centralize semantic application colors
 
 **Decision:** Application visuals should use semantic theme tokens with access from utilities and TypeScript. Event Type/option colors remain database data rather than theme tokens.

@@ -10,9 +10,11 @@ Tracked application structure:
 src/
   app/
     _layout.tsx       root providers, stack, global CSS, migration startup
-    index.tsx         Home route and event logging orchestration
+    (tabs)/
+      _layout.tsx     persistent Home/History bottom-tab navigator
+      index.tsx       Home route and event logging orchestration
+      history.tsx     infinite-scrolling full-history route
     settings.tsx      placeholder Settings route
-    history.tsx       infinite-scrolling full-history route
   components/
     SwipeableEventRow.tsx
   data/
@@ -28,9 +30,9 @@ The `@/` TypeScript alias points to `src/`. `app.json`, Babel, Metro, Tailwind, 
 
 ## Runtime and data flow
 
-Importing the root layout calls `runMigrations()` synchronously before rendering the route stack. `database.ts` opens the local `cookietrail.db` synchronously. Home initializes its event definitions once by calling `getEventTypes()`, which reads visible event types and all options, maps SQLite rows to UI models, and supplies each definition to `SwipeableEventRow`.
+Importing the root layout calls `runMigrations()` synchronously before rendering the route stack. The root stack contains a two-screen tab group plus Settings outside the tabs. `database.ts` opens the local `cookietrail.db` synchronously. Home initializes its event definitions once by calling `getEventTypes()`, which reads visible event types and all options, maps SQLite rows to UI models, and supplies each definition to `SwipeableEventRow`.
 
-A row owns the gesture mechanics. It clamps horizontal movement, gives haptic feedback after a threshold, and commits the configured left or right option on release. Tapping expands the same row to expose all options. Home calls `logEvent`, refreshes the default pet's five newest events, shows a localized-time confirmation toast, and collapses the row. The recent-event query joins occurrences to their type and option definitions for display.
+A row owns the gesture mechanics. It clamps horizontal movement, gives haptic feedback after a threshold, and commits the configured left or right option on release. Tapping expands the same row to expose all options. Home calls `logEvent`, shows a localized-time confirmation toast, and collapses the row. History refreshes when its tab gains focus and joins occurrences to their type and option definitions for display.
 
 There is no service layer, remote API, state-management framework, or reactive database subscription. There are also no automated tests or test command. Keep new layers proportional to an approved need rather than adding them preemptively.
 
@@ -43,7 +45,7 @@ There is no service layer, remote API, state-management framework, or reactive d
 
 ## Decided direction, not current implementation
 
-- Home remains the primary, scrollable experience and gains recent history plus a simple Upcoming section.
+- Home remains the primary logging experience; History is a peer tab, and a simple Upcoming experience remains future direction.
 - Settings becomes the small administration surface for Event Types.
 - Event history is pet-scoped while event definitions remain global.
 - Predictions remain a lightweight interpretation of an individual pet's history.
