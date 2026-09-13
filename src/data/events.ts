@@ -30,7 +30,7 @@ export function getEventTypes(): EventType[] {
     SELECT *
     FROM event_types
     WHERE is_hidden = 0
-    ORDER BY rowid
+    ORDER BY sort_order, rowid
   `);
 
   const optionRows = db.getAllSync<EventOptionRow>(`
@@ -61,6 +61,14 @@ export function getEventTypes(): EventType[] {
         swipe: option.swipe_direction ? (option.swipe_direction as SwipeDirection) : undefined,
       })),
   }));
+}
+
+export function reorderEventTypes(eventTypeIds: string[]) {
+  db.withTransactionSync(() => {
+    eventTypeIds.forEach((eventTypeId, sortOrder) => {
+      db.runSync('UPDATE event_types SET sort_order = ? WHERE id = ?', sortOrder, eventTypeId);
+    });
+  });
 }
 
 type RecentEventRow = {

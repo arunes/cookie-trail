@@ -2,7 +2,7 @@
 
 ## Current state
 
-CookieTrail is a TypeScript mobile application built with Expo 57, React Native 0.86, React 19, and Expo Router. It uses file-based routes, NativeWind/Tailwind utilities, Expo SQLite, React Native Animated/PanResponder, Expo Haptics, Expo vector icons, and `react-native-toast-message`. npm and `package-lock.json` manage dependencies.
+CookieTrail is a TypeScript mobile application built with Expo 57, React Native 0.86, React 19, and Expo Router. It uses file-based routes, NativeWind/Tailwind utilities, Expo SQLite, React Native Animated/PanResponder, React Native Gesture Handler, Reanimated, Expo Haptics, Expo vector icons, `react-native-draggable-flatlist`, and `react-native-toast-message`. npm and `package-lock.json` manage dependencies.
 
 Tracked application structure:
 
@@ -53,7 +53,7 @@ There is no service layer, remote API, state-management framework, or reactive d
 - Upcoming is not implemented.
 - Settings says there is nothing to configure; Event Type administration is not implemented.
 - Home still presents an inert “Add Custom Event” control, contrary to its decided placement in Settings.
-- Event order is implicit `event_types.rowid`; reorder storage and drag interaction do not exist.
+- Event order is read from `sort_order` and has a transactional update function, but no reorder screen exposes it yet.
 - App/package/bundle identifiers still use generated `my-expo-app`/`com.anonymous.myexpoapp` values rather than CookieTrail branding.
 
 These are recorded discrepancies, not authorization to fix them.

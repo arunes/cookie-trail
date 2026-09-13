@@ -1,6 +1,7 @@
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { ToastHost } from '@/toastConfig';
 import { colors } from '@/theme/tokens';
 import { runMigrations } from '@/data/migration';
@@ -15,17 +16,19 @@ runMigrations();
 
 export default function RootLayout() {
   return (
-    <SafeAreaProvider>
-      <SafeAreaView className="flex-1 bg-background" edges={['top', 'bottom']}>
-        <StatusBar style="dark" />
-        <Stack
-          screenOptions={{
-            headerShown: false,
-            contentStyle: { backgroundColor: colors.background },
-          }}
-        />
-        <ToastHost />
-      </SafeAreaView>
-    </SafeAreaProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <SafeAreaProvider>
+        <SafeAreaView className="flex-1 bg-background" edges={['top', 'bottom']}>
+          <StatusBar style="dark" />
+          <Stack
+            screenOptions={{
+              headerShown: false,
+              contentStyle: { backgroundColor: colors.background },
+            }}
+          />
+          <ToastHost />
+        </SafeAreaView>
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 }

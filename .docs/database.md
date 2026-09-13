@@ -26,7 +26,7 @@ The migration seeds exactly one pet named `My Pet`, using Unix epoch millisecond
 
 Defines event categories. Its text primary key supports stable identifiers such as `system.pee`. It stores `label`, icon name, foreground/background colors, and integer boolean flags for system, hidden, and predictable state.
 
-The seed contains Pee and Poop as predictable and Food, Water, and Exercise as not predictable. Event Types do not contain `pet_id`; they are definitions rather than pet history.
+The seed contains Pee and Poop as predictable and Food, Water, and Exercise as not predictable. Event Types do not contain `pet_id`; they are definitions rather than pet history. Event Type reads use `sort_order`, and a transactional update function is available for the future reorder screen.
 
 ### `event_options`
 
@@ -46,7 +46,6 @@ All application timestamps must be SQLite `INTEGER` values containing Unix epoch
 
 - Recent and full-history reads are scoped to the default pet and join event definitions/options for presentation. Full history is fetched in bounded batches as the user scrolls.
 - Foreign-key constraints are declared, but application initialization does not explicitly enable or verify SQLite foreign-key enforcement.
-- Home ordering currently relies on `event_types.rowid`; Event Types have no explicit sort column.
 - Custom Event Type lifecycle, including archival when log rows reference a definition, has not been designed or implemented.
 
 ## Decided evolution policy

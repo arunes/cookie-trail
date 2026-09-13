@@ -50,7 +50,7 @@ This is a lightweight record of established product and architecture decisions. 
 
 **Why:** Home should stay focused on logging. Administration is secondary, and one gesture should have one predictable purpose.
 
-**Current gap:** Home still renders an inert Add Custom Event button; Settings is a placeholder, and no administration or reorder behavior exists.
+**Current gap:** Ordering persistence is prepared, but the separate reorder screen and its drag interaction are not implemented. Settings remains a placeholder.
 
 ## Exclude Stats from V1
 
