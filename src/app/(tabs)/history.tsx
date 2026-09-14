@@ -4,7 +4,12 @@ import { useFocusEffect } from 'expo-router';
 import { useCallback, useRef, useState } from 'react';
 import { Alert, FlatList, Modal, Platform, Pressable, Text, View } from 'react-native';
 
-import { deleteEventLogs, getEventHistory, updateEventTimestamp } from '@/data/events';
+import {
+  deleteEventLogs,
+  getEventHistory,
+  getEventLogIds,
+  updateEventTimestamp,
+} from '@/data/events';
 import type { RecentEvent } from '@/data/models';
 import { getActivePet } from '@/data/pets';
 import { colors } from '@/theme/tokens';
@@ -17,6 +22,7 @@ export default function History() {
   const [hasMore, setHasMore] = useState(events.length === BATCH_SIZE);
   const [selecting, setSelecting] = useState(false);
   const [selected, setSelected] = useState<Set<number>>(() => new Set());
+  const [allEventIds, setAllEventIds] = useState<number[]>(() => getEventLogIds(pet.id));
   const [editing, setEditing] = useState<RecentEvent | null>(null);
   const [draft, setDraft] = useState(() => new Date());
   const [picker, setPicker] = useState<'date' | 'time' | null>(null);
@@ -25,6 +31,7 @@ export default function History() {
   const refresh = useCallback(() => {
     const rows = getEventHistory(pet.id, BATCH_SIZE, 0);
     setEvents(rows);
+    setAllEventIds(getEventLogIds(pet.id));
     setHasMore(rows.length === BATCH_SIZE);
     loading.current = false;
   }, [pet.id]);
@@ -61,6 +68,12 @@ export default function History() {
     setSelecting(true);
     setSelected((current) => new Set(current).add(id));
   }, []);
+
+  const allSelected = allEventIds.length > 0 && selected.size === allEventIds.length;
+
+  const toggleSelectAll = useCallback(() => {
+    setSelected(allSelected ? new Set() : new Set(allEventIds));
+  }, [allEventIds, allSelected]);
 
   const openEditor = useCallback((event: RecentEvent) => {
     setEditing(event);
@@ -107,13 +120,28 @@ export default function History() {
         <Text className="text-[25px] font-bold tracking-[-1px] text-foreground">
           {selecting ? `${selected.size} selected` : 'History'}
         </Text>
-        <Pressable
-          className="min-h-11 justify-center px-2 active:opacity-60"
-          onPress={selecting ? cancelSelection : () => setSelecting(true)}>
-          <Text className="text-[14px] font-semibold text-accent">
-            {selecting ? 'Cancel' : 'Select'}
-          </Text>
-        </Pressable>
+        <View className="flex-row items-center">
+          {selecting && (
+            <Pressable
+              className="min-h-11 justify-center px-2 active:opacity-60"
+              disabled={allEventIds.length === 0}
+              onPress={toggleSelectAll}>
+              <Text className="text-[14px] font-semibold text-accent">
+                {allSelected ? 'Deselect All' : 'Select All'}
+              </Text>
+            </Pressable>
+          )}
+          <Pressable
+            className={`min-h-11 justify-center px-2 active:opacity-60 ${
+              !selecting && allEventIds.length === 0 ? 'opacity-40' : ''
+            }`}
+            disabled={!selecting && allEventIds.length === 0}
+            onPress={selecting ? cancelSelection : () => setSelecting(true)}>
+            <Text className="text-[14px] font-semibold text-accent">
+              {selecting ? 'Cancel' : 'Select'}
+            </Text>
+          </Pressable>
+        </View>
       </View>
 
       <FlatList

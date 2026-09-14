@@ -11,7 +11,7 @@ Each event row supports two input paths:
 
 After a selection, Home writes the event for the default pet and displays a bottom toast with the event, option, and localized time.
 
-History shows the default pet's complete event history and loads additional rows as the user scrolls. Tapping a row opens a bottom-sheet editor for its date and time. Long-pressing a row enters multi-selection; a visible Select action provides the same mode, subsequent taps toggle rows, and a floating destructive action confirms before deleting the selected events. Upcoming and custom Event Type creation are not implemented. Settings currently contains only back navigation, a title, and “Nothing to configure yet.”
+History shows the default pet's complete event history and loads additional rows as the user scrolls. Tapping a row opens a bottom-sheet editor for its date and time. Long-pressing a row enters multi-selection; a visible Select action provides the same mode, subsequent taps toggle rows, and Select All includes the complete history even when some rows have not loaded yet. A floating destructive action confirms before deleting the selected events. Upcoming and custom Event Type creation are not implemented. Settings currently contains only back navigation, a title, and “Nothing to configure yet.”
 
 ## Decided interaction direction
 

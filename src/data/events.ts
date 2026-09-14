@@ -125,6 +125,15 @@ export function getEventHistory(petId: number, limit: number, offset: number): R
   }));
 }
 
+export function getEventLogIds(petId: number): number[] {
+  return db
+    .getAllSync<{ id: number }>(
+      'SELECT id FROM event_log WHERE pet_id = ? ORDER BY occurred_at DESC, id DESC',
+      petId
+    )
+    .map((row) => row.id);
+}
+
 export function updateEventTimestamp(eventLogId: number, petId: number, occurredAt: number) {
   db.runSync(
     'UPDATE event_log SET occurred_at = ? WHERE id = ? AND pet_id = ?',
