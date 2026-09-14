@@ -15,7 +15,25 @@ export default function Settings() {
       </Pressable>
 
       <Text className="mt-4 text-[25px] font-bold tracking-[-1px] text-foreground">Settings</Text>
-      <Text className="mt-1 text-[13px] text-foreground-muted">Nothing to configure yet.</Text>
+
+      <View className="mt-5 overflow-hidden rounded-2xl border border-border bg-surface">
+        <Pressable
+          className="flex-row items-center px-4 py-4 active:bg-option-surface"
+          accessibilityRole="button"
+          accessibilityLabel="Open Event Settings"
+          onPress={() => router.push('/event-settings')}>
+          <View className="h-10 w-10 items-center justify-center rounded-full bg-accent-surface">
+            <Ionicons name="grid" size={20} color={colors.accent} />
+          </View>
+
+          <View className="ml-3 flex-1">
+            <Text className="text-[16px] font-semibold text-foreground">Event Settings</Text>
+            <Text className="mt-0.5 text-[13px] text-foreground-muted">Manage event types</Text>
+          </View>
+
+          <Ionicons name="chevron-forward" size={21} color={colors['icon-muted']} />
+        </Pressable>
+      </View>
     </View>
   );
 }
