@@ -50,7 +50,7 @@ This is a lightweight record of established product and architecture decisions. 
 
 **Why:** Home should stay focused on logging. Administration is secondary, and one gesture should have one predictable purpose.
 
-**Current gap:** Ordering persistence is prepared, but the separate reorder screen and its drag interaction are not implemented. Settings remains a placeholder.
+**Status:** Settings contains a dedicated Event Settings screen. It lists visible Event Types and persists long-press drag ordering; create, edit, hide, and delete remain future work.
 
 ## Exclude Stats from V1
 

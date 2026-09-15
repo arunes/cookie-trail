@@ -2,7 +2,7 @@
 
 ## Current state
 
-CookieTrail is a TypeScript mobile application built with Expo 57, React Native 0.86, React 19, and Expo Router. It uses file-based routes, NativeWind/Tailwind utilities, Expo SQLite, React Native Animated/PanResponder, React Native Gesture Handler, Reanimated, Expo Haptics, Expo vector icons, `react-native-draggable-flatlist`, and `react-native-toast-message`. npm and `package-lock.json` manage dependencies.
+CookieTrail is a TypeScript mobile application built with Expo 57, React Native 0.86, React 19, and Expo Router. It uses file-based routes, NativeWind/Tailwind utilities, Expo SQLite, React Native Animated/PanResponder, React Native Gesture Handler, Reanimated, Expo Haptics, Expo vector icons, `react-native-sortables`, and `react-native-toast-message`. npm and `package-lock.json` manage dependencies.
 
 Tracked application structure:
 
@@ -14,7 +14,8 @@ src/
       _layout.tsx     persistent Home/History bottom-tab navigator
       index.tsx       Home route and event logging orchestration
       history.tsx     infinite-scrolling full-history route
-    settings.tsx      placeholder Settings route
+    settings.tsx      Settings menu
+    event-settings.tsx event list with persistent drag ordering
   components/
     SwipeableEventRow.tsx
   data/
@@ -30,7 +31,7 @@ The `@/` TypeScript alias points to `src/`. `app.json`, Babel, Metro, Tailwind, 
 
 ## Runtime and data flow
 
-Importing the root layout calls `runMigrations()` synchronously before rendering the route stack. The root stack contains a two-screen tab group plus Settings outside the tabs. `database.ts` opens the local `cookietrail.db` synchronously. Home initializes its event definitions once by calling `getEventTypes()`, which reads visible event types and all options, maps SQLite rows to UI models, and supplies each definition to `SwipeableEventRow`.
+Importing the root layout calls `runMigrations()` synchronously before rendering the route stack. The root stack contains a two-screen tab group plus Settings outside the tabs. `database.ts` opens the local `cookietrail.db` synchronously. Home loads its event definitions by calling `getEventTypes()`, which reads visible event types and all options, maps SQLite rows to UI models, and supplies each definition to `SwipeableEventRow`. It refreshes those definitions when Home regains focus so ordering changes made in Event Settings appear immediately.
 
 A Home row owns the gesture mechanics. It clamps horizontal movement, gives haptic feedback after a threshold, and commits the configured left or right option on release. Tapping expands the same row to expose all options. Home calls `logEvent`, shows a localized-time confirmation toast, and collapses the row. History refreshes when its tab gains focus and joins occurrences to their type and option definitions for display. History owns timestamp editing and selection state; timestamp updates and pet-scoped transactional bulk deletes remain in the data layer.
 
@@ -53,9 +54,8 @@ There is no service layer, remote API, state-management framework, or reactive d
 ## Known implementation gaps
 
 - Upcoming is not implemented.
-- Settings says there is nothing to configure; Event Type administration is not implemented.
+- Event Settings currently supports listing and reordering visible Event Types; create, edit, hide, and delete are not implemented.
 - Home still presents an inert “Add Custom Event” control, contrary to its decided placement in Settings.
-- Event order is read from `sort_order` and has a transactional update function, but no reorder screen exposes it yet.
 - App/package/bundle identifiers still use generated `my-expo-app`/`com.anonymous.myexpoapp` values rather than CookieTrail branding.
 
 These are recorded discrepancies, not authorization to fix them.

@@ -1,7 +1,7 @@
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useCallback, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import Toast from 'react-native-toast-message';
 
 import { SwipeableEventRow } from '@/components/SwipeableEventRow';
@@ -11,9 +11,15 @@ import { colors } from '@/theme/tokens';
 import { EventOption, EventType } from '@/data/models';
 
 export default function Home() {
-  const [events] = useState(getEventTypes);
+  const [events, setEvents] = useState(getEventTypes);
   const [pet] = useState(getActivePet);
   const [expandedId, setExpandedId] = useState<string | null>(null);
+
+  useFocusEffect(
+    useCallback(() => {
+      setEvents(getEventTypes());
+    }, [])
+  );
 
   const toggleEvent = useCallback((id: string) => {
     setExpandedId((current) => (current === id ? null : id));
