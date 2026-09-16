@@ -21,7 +21,9 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.anonymous.myexpoapp"
@@ -32,6 +34,11 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.anonymous.myexpoapp"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "ca207651-c06c-4f7b-b695-2cae35b76d9d"
+      }
     }
   }
 }
