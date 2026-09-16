@@ -1,0 +1,100 @@
+# CookieTrail Source License 1.0
+
+Copyright © 2026 Ali Unes. All rights reserved.
+
+Permission is granted to any person obtaining a copy of this software and associated source code files (the “Software”) to view, study, use, and modify the Software, subject to the following conditions.
+
+## 1. Permitted Use
+
+You may:
+
+* View and study the source code.
+* Use the Software for personal, educational, or other non-commercial purposes.
+* Modify the Software for personal or non-commercial purposes.
+* Create forks of the source code for development, experimentation, or contribution purposes.
+* Submit contributions, patches, or pull requests to the original project.
+
+## 2. Commercial Use Prohibited
+
+You may not use the Software, or any substantial portion or derivative of the Software, for commercial purposes without prior written permission from the copyright holder.
+
+Commercial purposes include, but are not limited to:
+
+* Selling the Software or a derivative work.
+* Charging users for access to the Software or its functionality.
+* Offering the Software as part of a paid product, subscription, service, or hosted service.
+* Using the Software primarily to generate revenue.
+* Licensing or sublicensing the Software for commercial use.
+
+## 3. App Store and Binary Distribution Prohibited
+
+Without prior written permission from the copyright holder, you may not distribute, upload, publish, or make available compiled or packaged versions of the Software, or derivative applications substantially based on the Software, through:
+
+* Apple App Store
+* Google Play Store
+* Amazon Appstore
+* Microsoft Store
+* Samsung Galaxy Store
+* F-Droid
+* Any other mobile, desktop, web, package, or software distribution marketplace
+
+You may not distribute compiled application binaries to the general public under the CookieTrail name or as a substantially equivalent competing application.
+
+Distribution of source-code forks through source-code hosting platforms such as GitHub is permitted, provided that all terms of this license are preserved.
+
+## 4. Name, Branding, and Assets
+
+This license does not grant permission to use the CookieTrail name, logo, icons, artwork, trademarks, branding, or other identifying assets in connection with another product or service.
+
+Forks and derivative projects must not imply endorsement by or affiliation with the original CookieTrail project or its copyright holder.
+
+## 5. Attribution and License Preservation
+
+Any permitted copy or substantial portion of the Software must retain:
+
+* This copyright notice.
+* This license.
+* Any existing attribution notices contained in the source code.
+
+You may not remove or alter notices identifying the original copyright holder.
+
+## 6. Contributions
+
+By submitting a contribution to the CookieTrail project, you represent that you have the right to submit that contribution.
+
+Unless otherwise agreed in writing, you grant the copyright holder a perpetual, worldwide, royalty-free, irrevocable, non-exclusive license to use, reproduce, modify, distribute, sublicense, and commercially exploit your contribution as part of CookieTrail or related products.
+
+You retain copyright ownership of your own contribution.
+
+## 7. Rights Reserved by the Copyright Holder
+
+The restrictions in this license apply to licensees and do not restrict the copyright holder.
+
+The copyright holder retains the unrestricted right to:
+
+* Sell the Software.
+* Publish the Software through app stores or other distribution channels.
+* Offer paid versions, subscriptions, or services.
+* Issue commercial licenses.
+* Re-license the Software under different terms.
+* Create proprietary versions or derivative works.
+
+Commercial licenses or exceptions to this license may be granted separately in writing.
+
+## 8. No Warranty
+
+THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
+
+IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM, OUT OF, OR IN CONNECTION WITH THE SOFTWARE OR THE USE OF THE SOFTWARE.
+
+## 9. Termination
+
+Your rights under this license automatically terminate if you materially violate its terms.
+
+Upon termination, you must cease all use and distribution of the Software that would otherwise require permission under copyright law.
+
+## 10. No Implied Rights
+
+Any rights not expressly granted by this license are reserved by the copyright holder.
+
+Use of the Software outside the permissions granted by this license requires prior written permission from the copyright holder.

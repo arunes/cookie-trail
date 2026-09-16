@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "my-expo-app",
-    "slug": "my-expo-app",
+    "name": "CookieTrail",
+    "slug": "cookie-trail",
     "version": "1.0.0",
     "scheme": "cookietrail",
     "experiments": {

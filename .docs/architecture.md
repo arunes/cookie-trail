@@ -30,7 +30,7 @@ src/
   toastConfig.tsx     event confirmation toast
 ```
 
-The `@/` TypeScript alias points to `src/`. `app.json`, Babel, Metro, Tailwind, ESLint, and Prettier files configure the Expo toolchain. Locally generated `android/` and `ios/` directories are ignored by Git; the tracked project remains configured with scaffold identifiers such as `my-expo-app`.
+The `@/` TypeScript alias points to `src/`. `app.json`, Babel, Metro, Tailwind, ESLint, and Prettier files configure the Expo toolchain. Locally generated `android/` and `ios/` directories are ignored by Git and must be regenerated with `expo prebuild` and rebuilt with `expo run:android`/`run:ios` after changes to `app.json` or the assets it references (icon, adaptive icon, splash); `expo start` serves JavaScript only. The tracked configuration uses CookieTrail branding for name, slug, and scheme, while the iOS bundle identifier and Android package remain the scaffold `com.anonymous.cookietrail`.
 
 ## Runtime and data flow
 
@@ -61,6 +61,6 @@ There is no service layer, remote API, state-management framework, or reactive d
 - Upcoming is not implemented.
 - Event Settings supports creating, editing, hiding, reordering, and deleting custom events. New events and their initial options share one transaction; editing an existing event's options persists immediately.
 - Home still presents an inert “Add Custom Event” control, contrary to its decided placement in Settings.
-- App/package/bundle identifiers still use generated `my-expo-app`/`com.anonymous.myexpoapp` values rather than CookieTrail branding.
+- App name, slug, and scheme now use CookieTrail branding; the iOS bundle identifier and Android package are still the scaffold `com.anonymous.cookietrail`.
 
 These are recorded discrepancies, not authorization to fix them.
