@@ -1,5 +1,5 @@
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { router, useLocalSearchParams } from 'expo-router';
+import { router } from 'expo-router';
 import { useCallback, useState } from 'react';
 import {
   Alert,
@@ -22,36 +22,18 @@ import {
   DEFAULT_COLOR_PAIR,
   type EventOptionDraft,
 } from '@/components/eventEditor';
-import {
-  addEventOption,
-  clearSwipeDirection,
-  deleteEventOption,
-  deleteEventType,
-  getEventOptionLogCount,
-  getEventType,
-  getEventTypeLogCount,
-  nextEventOptionId,
-  reorderEventOptions,
-  updateEventOption,
-  updateEventType,
-} from '@/data/events';
+import { createEventType, nextEventOptionId } from '@/data/events';
 import type { EventOption, IconName } from '@/data/models';
 import { colors } from '@/theme/tokens';
 
-export default function EditEvent() {
-  const { id } = useLocalSearchParams<{ id: string }>();
-  const eventTypeId = id;
-
-  const [event] = useState(() => getEventType(id));
-  const [label, setLabel] = useState(event?.label ?? '');
-  const [icon, setIcon] = useState<IconName>(event?.icon ?? 'paw');
-  const [colorPair, setColorPair] = useState(() => ({
-    color: event?.color ?? DEFAULT_COLOR_PAIR.color,
-    bg: event?.bg ?? DEFAULT_COLOR_PAIR.bg,
-  }));
-  const [isPredictable, setIsPredictable] = useState(event?.isPredictable ?? false);
-  const [isHidden, setIsHidden] = useState(event?.isHidden ?? false);
-  const [options, setOptions] = useState<EventOption[]>(event?.options ?? []);
+export default function CreateEvent() {
+  const [label, setLabel] = useState('');
+  const [icon, setIcon] = useState<IconName>('paw');
+  const [colorPair, setColorPair] = useState(DEFAULT_COLOR_PAIR);
+  const [isPredictable, setIsPredictable] = useState(false);
+  const [isHidden, setIsHidden] = useState(false);
+  // Options exist only in this draft state until the event is created.
+  const [options, setOptions] = useState<EventOption[]>([]);
 
   const [editorOpen, setEditorOpen] = useState(false);
   const [editingOption, setEditingOption] = useState<EventOption | null>(null);
@@ -65,14 +47,8 @@ export default function EditEvent() {
       if (reordered === options) return;
 
       setOptions(reordered);
-      requestIdleCallback(() => {
-        reorderEventOptions(
-          eventTypeId,
-          reordered.map((option) => option.id)
-        );
-      });
     },
-    [options, eventTypeId]
+    [options]
   );
 
   const openNewOption = useCallback(() => {
@@ -92,20 +68,13 @@ export default function EditEvent() {
   const handleSaveOption = useCallback(
     (draft: EventOptionDraft) => {
       if (editingOption) {
-        updateEventOption(eventTypeId, editingOption.id, draft);
-
-        // A swipe direction belongs to one option: this save takes it over.
-        if (draft.swipe) {
-          clearSwipeDirection(eventTypeId, draft.swipe, editingOption.id);
-        }
-
         setOptions((current) =>
           current.map((option) => {
             if (option.id === editingOption.id) {
               return { ...option, ...draft };
             }
 
-            // Mirror the take-over in local state.
+            // A swipe direction belongs to one option: this save takes it over.
             return draft.swipe && option.swipe === draft.swipe
               ? { ...option, swipe: undefined }
               : option;
@@ -124,95 +93,58 @@ export default function EditEvent() {
           swipe: draft.swipe,
         };
 
-        addEventOption(eventTypeId, newOption);
-        setOptions((current) => [...current, newOption]);
+        setOptions((current) => [
+          ...current.map((option) =>
+            draft.swipe && option.swipe === draft.swipe ? { ...option, swipe: undefined } : option
+          ),
+          newOption,
+        ]);
       }
 
       setEditorOpen(false);
     },
-    [editingOption, eventTypeId, options]
+    [editingOption, options]
   );
 
   const handleDeleteOption = useCallback(() => {
     if (!editingOption) return;
 
-    const used = getEventOptionLogCount(eventTypeId, editingOption.id);
-    Alert.alert(
-      `Delete ${editingOption.label}?`,
-      used > 0
-        ? `This also permanently deletes ${used} logged ${used === 1 ? 'entry' : 'entries'} for this option. This cannot be undone.`
-        : 'This cannot be undone.',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: () => {
-            deleteEventOption(eventTypeId, editingOption.id);
-            Toast.show({ type: 'status', text1: `${editingOption.label} deleted` });
-            setOptions((current) => current.filter((option) => option.id !== editingOption.id));
-            setEditorOpen(false);
-          },
+    // Draft options have no logged history yet, so no usage check is needed.
+    Alert.alert(`Delete ${editingOption.label}?`, 'This cannot be undone.', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Delete',
+        style: 'destructive',
+        onPress: () => {
+          setOptions((current) => current.filter((option) => option.id !== editingOption.id));
+          setEditorOpen(false);
         },
-      ]
-    );
-  }, [editingOption, eventTypeId]);
+      },
+    ]);
+  }, [editingOption]);
 
-  const saveEvent = useCallback(() => {
+  const createEvent = useCallback(() => {
     const trimmed = label.trim();
     if (!trimmed) {
       Toast.show({ type: 'status', text1: 'Event label is required' });
       return;
     }
 
-    updateEventType(eventTypeId, {
-      label: trimmed,
-      icon,
-      color: colorPair.color,
-      bg: colorPair.bg,
-      isPredictable,
-      isHidden,
-    });
+    createEventType(
+      {
+        label: trimmed,
+        icon,
+        color: colorPair.color,
+        bg: colorPair.bg,
+        isPredictable,
+        isHidden,
+      },
+      options
+    );
 
-    Toast.show({ type: 'status', text1: `${trimmed} updated` });
+    Toast.show({ type: 'status', text1: `${trimmed} created` });
     router.back();
-  }, [label, icon, colorPair, isPredictable, isHidden, eventTypeId]);
-
-  const confirmDeleteEvent = useCallback(() => {
-    if (!event) return;
-
-    const count = getEventTypeLogCount(eventTypeId);
-    Alert.alert(
-      `Delete ${event.label}?`,
-      count > 0
-        ? `This also permanently deletes ${count} logged ${count === 1 ? 'entry' : 'entries'} for this event. This cannot be undone.`
-        : 'This cannot be undone.',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: () => {
-            deleteEventType(eventTypeId);
-            Toast.show({ type: 'status', text1: `${event.label} deleted` });
-            router.back();
-          },
-        },
-      ]
-    );
-  }, [event, eventTypeId]);
-
-  if (!event) {
-    return (
-      <View className="flex-1 bg-background px-4">
-        <BackButton />
-        <Text className="mt-4 text-[25px] font-bold tracking-[-1px] text-foreground">
-          Edit Event
-        </Text>
-        <Text className="mt-2 text-[13px] text-foreground-muted">Event not found.</Text>
-      </View>
-    );
-  }
+  }, [label, icon, colorPair, isPredictable, isHidden, options]);
 
   return (
     <View className="flex-1 bg-background">
@@ -221,10 +153,15 @@ export default function EditEvent() {
         contentContainerClassName="px-4 pb-10"
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}>
-        <BackButton />
+        <Pressable
+          className="-ml-2 mt-2 h-11 w-11 items-center justify-center rounded-full active:opacity-70"
+          accessibilityLabel="Go back"
+          onPress={() => router.back()}>
+          <Ionicons name="chevron-back" size={26} color={colors.foreground} />
+        </Pressable>
 
         <Text className="mt-4 text-[25px] font-bold tracking-[-1px] text-foreground">
-          Edit Event
+          Create Event
         </Text>
 
         {/* Live preview of the current icon, color, and label */}
@@ -237,10 +174,10 @@ export default function EditEvent() {
 
           <View className="ml-3 flex-1">
             <Text className="text-[17px] font-semibold text-foreground">
-              {label || event.label}
+              {label || 'New event'}
             </Text>
             <Text className="mt-0.5 text-[12px] text-foreground-muted">
-              {event.isSystem ? 'System event' : 'Custom event'}
+              Custom event
               {isHidden ? ' · Hidden' : ''}
             </Text>
           </View>
@@ -348,47 +285,25 @@ export default function EditEvent() {
           )}
         </View>
 
-        {/* Save / Delete */}
+        {/* Create */}
         <Pressable
           className="mt-8 h-12 items-center justify-center rounded-[16px] bg-primary active:opacity-80"
           accessibilityRole="button"
-          accessibilityLabel="Save event"
-          onPress={saveEvent}>
-          <Text className="text-[15px] font-semibold text-on-primary">Save</Text>
+          accessibilityLabel="Create event"
+          onPress={createEvent}>
+          <Text className="text-[15px] font-semibold text-on-primary">Create Event</Text>
         </Pressable>
-
-        {!event.isSystem && (
-          <Pressable
-            className="mt-3 h-12 flex-row items-center justify-center rounded-[16px] border border-border active:opacity-70"
-            accessibilityRole="button"
-            accessibilityLabel="Delete event"
-            onPress={confirmDeleteEvent}>
-            <Ionicons name="trash-outline" size={19} color={colors.danger} />
-            <Text className="ml-2 text-[15px] font-semibold text-danger">Delete Event</Text>
-          </Pressable>
-        )}
       </ScrollView>
 
       {/* Option editor */}
       <EventOptionEditorSheet
         visible={editorOpen}
-        contextLabel={event.label}
+        contextLabel={label.trim() || 'New event'}
         option={editingOption}
         onClose={closeEditor}
         onSave={handleSaveOption}
         onDelete={editingOption ? handleDeleteOption : undefined}
       />
     </View>
-  );
-}
-
-function BackButton() {
-  return (
-    <Pressable
-      className="-ml-2 mt-2 h-11 w-11 items-center justify-center rounded-full active:opacity-70"
-      accessibilityLabel="Go back"
-      onPress={() => router.back()}>
-      <Ionicons name="chevron-back" size={26} color={colors.foreground} />
-    </Pressable>
   );
 }

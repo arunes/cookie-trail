@@ -81,9 +81,18 @@ export default function EventSettings() {
         <Ionicons name="chevron-back" size={26} color={colors.foreground} />
       </Pressable>
 
-      <Text className="mt-4 text-[25px] font-bold tracking-[-1px] text-foreground">
-        Event Settings
-      </Text>
+      <View className="mt-4 flex-row items-center justify-between">
+        <Text className="text-[25px] font-bold tracking-[-1px] text-foreground">
+          Event Settings
+        </Text>
+        <Pressable
+          className="h-11 w-11 items-center justify-center rounded-full bg-primary active:opacity-80"
+          accessibilityRole="button"
+          accessibilityLabel="Add event"
+          onPress={() => router.push('/create-event')}>
+          <Ionicons name="add" size={26} color={colors['on-primary']} />
+        </Pressable>
+      </View>
       <Text className="mt-1 text-[13px] text-foreground-muted">
         Tap an event to edit it. Long press and drag to change its order on Home.
       </Text>

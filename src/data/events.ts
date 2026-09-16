@@ -161,20 +161,40 @@ export function addEventOption(eventTypeId: string, option: EventOption) {
 export function updateEventOption(
   eventTypeId: string,
   optionId: string,
-  changes: Pick<EventOption, 'label' | 'icon' | 'color' | 'bg'>
+  changes: Pick<EventOption, 'label' | 'icon' | 'color' | 'bg' | 'swipe'>
 ) {
   db.runSync(
     `
       UPDATE event_options
-      SET label = ?, icon = ?, color = ?, bg = ?
+      SET label = ?, icon = ?, color = ?, bg = ?, swipe_direction = ?
       WHERE event_type_id = ? AND id = ?
     `,
     changes.label,
     changes.icon ?? null,
     changes.color ?? null,
     changes.bg ?? null,
+    changes.swipe ?? null,
     eventTypeId,
     optionId
+  );
+}
+
+// Clears an assigned swipe direction from every other option of the type, so a
+// direction always belongs to at most one option (Home commits the first hit).
+export function clearSwipeDirection(
+  eventTypeId: string,
+  swipe: SwipeDirection,
+  exceptOptionId: string
+) {
+  db.runSync(
+    `
+      UPDATE event_options
+      SET swipe_direction = NULL
+      WHERE event_type_id = ? AND swipe_direction = ? AND id != ?
+    `,
+    eventTypeId,
+    swipe,
+    exceptOptionId
   );
 }
 
@@ -219,23 +239,17 @@ export function getEventOptionLogCount(eventTypeId: string, optionId: string): n
   return row?.count ?? 0;
 }
 
-export function nextEventOptionId(eventTypeId: string, label: string): string {
-  const base =
-    label
-      .trim()
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-+|-+$/g, '') || 'option';
+function slugify(text: string, fallback: string): string {
+  const slug = text
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
 
-  const taken = new Set(
-    db
-      .getAllSync<{ id: string }>(
-        'SELECT id FROM event_options WHERE event_type_id = ?',
-        eventTypeId
-      )
-      .map((row) => row.id)
-  );
+  return slug || fallback;
+}
 
+function uniqueId(base: string, taken: Set<string>): string {
   if (!taken.has(base)) {
     return base;
   }
@@ -246,6 +260,83 @@ export function nextEventOptionId(eventTypeId: string, label: string): string {
   }
 
   return `${base}-${counter}`;
+}
+
+export function nextEventOptionId(takenIds: Iterable<string>, label: string): string {
+  return uniqueId(slugify(label, 'option'), new Set(takenIds));
+}
+
+export function createEventType(
+  event: Pick<EventType, 'label' | 'icon' | 'color' | 'bg' | 'isPredictable' | 'isHidden'>,
+  options: EventOption[]
+): string {
+  let eventTypeId = '';
+
+  db.withTransactionSync(() => {
+    const taken = new Set(
+      db.getAllSync<{ id: string }>('SELECT id FROM event_types').map((row) => row.id)
+    );
+    eventTypeId = uniqueId(slugify(event.label, 'event'), taken);
+
+    const maxRow = db.getFirstSync<{ max: number | null }>(
+      'SELECT MAX(sort_order) + 1 AS max FROM event_types'
+    );
+
+    // Custom events are always created with is_system = 0 and appended after
+    // the existing ordering.
+    db.runSync(
+      `
+        INSERT INTO event_types (
+          id,
+          label,
+          icon,
+          color,
+          bg,
+          is_system,
+          is_hidden,
+          is_predictable,
+          sort_order
+        )
+        VALUES (?, ?, ?, ?, ?, 0, ?, ?, ?)
+      `,
+      eventTypeId,
+      event.label,
+      event.icon,
+      event.color,
+      event.bg,
+      event.isHidden ? 1 : 0,
+      event.isPredictable ? 1 : 0,
+      maxRow?.max ?? 0
+    );
+
+    options.forEach((option, index) => {
+      db.runSync(
+        `
+          INSERT INTO event_options (
+            id,
+            event_type_id,
+            label,
+            icon,
+            color,
+            bg,
+            swipe_direction,
+            sort_order
+          )
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        `,
+        option.id,
+        eventTypeId,
+        option.label,
+        option.icon ?? null,
+        option.color ?? null,
+        option.bg ?? null,
+        option.swipe ?? null,
+        index
+      );
+    });
+  });
+
+  return eventTypeId;
 }
 
 type RecentEventRow = {

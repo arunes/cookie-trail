@@ -50,7 +50,7 @@ This is a lightweight record of established product and architecture decisions. 
 
 **Why:** Home should stay focused on logging. Administration is secondary, and one gesture should have one predictable purpose.
 
-**Status:** Settings contains a dedicated Event Settings screen. It lists all event types (hidden ones included, with a "Hidden" badge) and persists long-press drag ordering. Tapping a row opens the Edit Event screen, which edits label, icon, color, the predictable/hidden flags, and options (add/edit/delete with drag reorder). System events cannot be deleted. Deleting a custom event, or an option within one, permanently deletes the logged history that references it after an explicit confirmation that states the count. New option types are tap-only; swipe assignment stays as seeded in V1. Creating new event types remains future work.
+**Status:** Settings contains a dedicated Event Settings screen. It lists all event types (hidden ones included, with a "Hidden" badge), persists long-press drag ordering, and creates new events through a Create Event screen that mirrors the editor. Tapping a row opens the Edit Event screen, which edits label, icon, color, the predictable/hidden flags, and options (label, icon, color, swipe action, add/edit/delete with drag reorder); the Create screen holds its options in draft until the event and all initial options are written in one transaction. Each swipe direction belongs to at most one option; assigning it in the option editor takes it over from the previous holder. System events cannot be deleted. Deleting a custom event, or an option within one, permanently deletes the logged history that references it after an explicit confirmation that states the count.
 
 ## Exclude Stats from V1
 
