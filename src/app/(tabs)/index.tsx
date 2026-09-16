@@ -5,7 +5,7 @@ import { router, useFocusEffect } from 'expo-router';
 import Toast from 'react-native-toast-message';
 
 import { SwipeableEventRow } from '@/components/SwipeableEventRow';
-import { getEventTypes, logEvent } from '@/data/events';
+import { deleteEventLogs, getEventTypes, logEvent } from '@/data/events';
 import { getActivePet } from '@/data/pets';
 import { colors } from '@/theme/tokens';
 import { EventOption, EventType } from '@/data/models';
@@ -27,7 +27,7 @@ export default function Home() {
 
   const triggerEvent = useCallback(
     (event: EventType, option: EventOption) => {
-      logEvent(pet.id, event.id, option.id);
+      const logId = logEvent(pet.id, event.id, option.id);
 
       Toast.show({
         type: 'event',
@@ -36,6 +36,11 @@ export default function Home() {
           hour: 'numeric',
           minute: '2-digit',
         }),
+        // Slightly longer window so the undo action is usable.
+        visibilityTime: 4000,
+        props: {
+          onUndo: () => deleteEventLogs([logId], pet.id),
+        },
       });
 
       setExpandedId(null);

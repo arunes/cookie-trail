@@ -9,7 +9,7 @@ Each event row supports two input paths:
 - Swipe right or left past a commit threshold to choose the option assigned to that direction. The row reveals an action strip and gives light haptic feedback when armed.
 - Tap to expand the row and show option pills, then tap any option.
 
-After a selection, Home writes the event for the default pet and displays a bottom toast with the event, option, and localized time.
+After a selection, Home writes the event for the default pet and displays a bottom toast with the event, option, and localized time. The toast carries an Undo link for its display window; tapping it deletes the just-recorded occurrence.
 
 History shows the default pet's complete event history and loads additional rows as the user scrolls. Tapping a row opens a bottom-sheet editor for its date and time. Long-pressing a row enters multi-selection; a visible Select action provides the same mode, subsequent taps toggle rows, and Select All includes the complete history even when some rows have not loaded yet. A floating destructive action confirms before deleting the selected events. Upcoming and custom Event Type creation are not implemented.
 

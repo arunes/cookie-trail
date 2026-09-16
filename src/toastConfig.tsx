@@ -1,11 +1,11 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Toast, { type ToastConfig } from 'react-native-toast-message';
 
 import { colors } from '@/theme/tokens';
 
 const toastConfig: ToastConfig = {
-  event: ({ text1, text2 }) => (
+  event: ({ text1, text2, props, hide }) => (
     <View style={styles.container}>
       <Text style={styles.check}>✓</Text>
 
@@ -13,6 +13,20 @@ const toastConfig: ToastConfig = {
         {text1}
         {text2 ? <Text style={styles.time}>{` · ${text2}`}</Text> : null}
       </Text>
+
+      {typeof props?.onUndo === 'function' && (
+        <Pressable
+          style={styles.undo}
+          hitSlop={8}
+          accessibilityRole="button"
+          accessibilityLabel="Undo recorded event"
+          onPress={() => {
+            hide();
+            props.onUndo();
+          }}>
+          <Text style={styles.undoText}>Undo</Text>
+        </Pressable>
+      )}
     </View>
   ),
 
@@ -66,6 +80,7 @@ const styles = StyleSheet.create({
   },
 
   primary: {
+    flexShrink: 1,
     color: colors.foreground,
     fontSize: 13,
     fontWeight: '600',
@@ -74,5 +89,15 @@ const styles = StyleSheet.create({
   time: {
     color: colors['foreground-secondary'],
     fontWeight: '500',
+  },
+
+  undo: {
+    marginLeft: 10,
+  },
+
+  undoText: {
+    color: colors.accent,
+    fontSize: 13,
+    fontWeight: '700',
   },
 });

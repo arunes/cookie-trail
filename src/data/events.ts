@@ -7,8 +7,8 @@ export function logEvent(
   eventTypeId: string,
   optionId: string,
   occurredAt = Date.now()
-) {
-  db.runSync(
+): number {
+  const result = db.runSync(
     `
       INSERT INTO event_log (
         pet_id,
@@ -23,6 +23,8 @@ export function logEvent(
     optionId,
     occurredAt
   );
+
+  return result.lastInsertRowId;
 }
 
 export function getEventTypes(includeHidden = false): EventType[] {
