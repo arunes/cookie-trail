@@ -16,7 +16,8 @@
         }
       ],
       "expo-status-bar",
-      "expo-sqlite"
+      "expo-sqlite",
+      "@react-native-community/datetimepicker"
     ],
     "orientation": "portrait",
     "icon": "./assets/icon.png",

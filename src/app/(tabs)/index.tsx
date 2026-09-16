@@ -1,6 +1,6 @@
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import { useCallback, useState } from 'react';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { Image, Pressable, ScrollView, Text, View } from 'react-native';
 import { router, useFocusEffect } from 'expo-router';
 import Toast from 'react-native-toast-message';
 
@@ -56,7 +56,11 @@ export default function Home() {
       {/* Header */}
       <View className="flex-row items-center justify-between py-5">
         <View className="flex-1 flex-row items-center">
-          <MaterialCommunityIcons name="paw" size={27} color={colors.brand} />
+          <Image
+            source={require('../../../assets/logo-transparent.png')}
+            className="h-11 w-11"
+            resizeMode="contain"
+          />
           <View className="ml-2">
             <Text className="text-[25px] font-bold tracking-[-1px] text-foreground">
               CookieTrail
