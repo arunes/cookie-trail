@@ -25,11 +25,11 @@ export function logEvent(
   );
 }
 
-export function getEventTypes(): EventType[] {
+export function getEventTypes(includeHidden = false): EventType[] {
   const eventRows = db.getAllSync<EventTypeRow>(`
     SELECT *
     FROM event_types
-    WHERE is_hidden = 0
+    ${includeHidden ? '' : 'WHERE is_hidden = 0'}
     ORDER BY sort_order, rowid
   `);
 
@@ -39,7 +39,25 @@ export function getEventTypes(): EventType[] {
     ORDER BY event_type_id, sort_order
   `);
 
-  return eventRows.map((row) => ({
+  return eventRows.map((row) => mapEventType(row, optionRows));
+}
+
+export function getEventType(eventTypeId: string): EventType | null {
+  const row = db.getFirstSync<EventTypeRow>('SELECT * FROM event_types WHERE id = ?', eventTypeId);
+  if (!row) {
+    return null;
+  }
+
+  const optionRows = db.getAllSync<EventOptionRow>(
+    'SELECT * FROM event_options WHERE event_type_id = ? ORDER BY sort_order, rowid',
+    eventTypeId
+  );
+
+  return mapEventType(row, optionRows);
+}
+
+function mapEventType(row: EventTypeRow, optionRows: EventOptionRow[]): EventType {
+  return {
     id: row.id,
     label: row.label,
     icon: row.icon as IconName,
@@ -60,7 +78,47 @@ export function getEventTypes(): EventType[] {
         bg: option.bg ?? undefined,
         swipe: option.swipe_direction ? (option.swipe_direction as SwipeDirection) : undefined,
       })),
-  }));
+  };
+}
+
+export function updateEventType(
+  eventTypeId: string,
+  changes: Pick<EventType, 'label' | 'icon' | 'color' | 'bg' | 'isPredictable' | 'isHidden'>
+) {
+  db.runSync(
+    `
+      UPDATE event_types
+      SET label = ?, icon = ?, color = ?, bg = ?, is_predictable = ?, is_hidden = ?
+      WHERE id = ?
+    `,
+    changes.label,
+    changes.icon,
+    changes.color,
+    changes.bg,
+    changes.isPredictable ? 1 : 0,
+    changes.isHidden ? 1 : 0,
+    eventTypeId
+  );
+}
+
+export function getEventTypeLogCount(eventTypeId: string): number {
+  const row = db.getFirstSync<{ count: number }>(
+    'SELECT COUNT(*) AS count FROM event_log WHERE event_type_id = ?',
+    eventTypeId
+  );
+
+  return row?.count ?? 0;
+}
+
+export function deleteEventType(eventTypeId: string) {
+  // Deleting a definition also deletes the history that references it: the
+  // event_log foreign key has no cascade, so its rows are removed explicitly.
+  // event_options cascade through their foreign key. System types are protected
+  // in SQL as well as in the UI.
+  db.withTransactionSync(() => {
+    db.runSync('DELETE FROM event_log WHERE event_type_id = ?', eventTypeId);
+    db.runSync('DELETE FROM event_types WHERE id = ? AND is_system = 0', eventTypeId);
+  });
 }
 
 export function reorderEventTypes(eventTypeIds: string[]) {
@@ -69,6 +127,125 @@ export function reorderEventTypes(eventTypeIds: string[]) {
       db.runSync('UPDATE event_types SET sort_order = ? WHERE id = ?', sortOrder, eventTypeId);
     });
   });
+}
+
+export function addEventOption(eventTypeId: string, option: EventOption) {
+  // New options append to the end of the type's ordering.
+  db.runSync(
+    `
+      INSERT INTO event_options (
+        id,
+        event_type_id,
+        label,
+        icon,
+        color,
+        bg,
+        swipe_direction,
+        sort_order
+      )
+      VALUES (?, ?, ?, ?, ?, ?, NULL, ?)
+    `,
+    option.id,
+    eventTypeId,
+    option.label,
+    option.icon ?? null,
+    option.color ?? null,
+    option.bg ?? null,
+    db.getFirstSync<{ max: number | null }>(
+      'SELECT MAX(sort_order) + 1 AS max FROM event_options WHERE event_type_id = ?',
+      eventTypeId
+    )?.max ?? 0
+  );
+}
+
+export function updateEventOption(
+  eventTypeId: string,
+  optionId: string,
+  changes: Pick<EventOption, 'label' | 'icon' | 'color' | 'bg'>
+) {
+  db.runSync(
+    `
+      UPDATE event_options
+      SET label = ?, icon = ?, color = ?, bg = ?
+      WHERE event_type_id = ? AND id = ?
+    `,
+    changes.label,
+    changes.icon ?? null,
+    changes.color ?? null,
+    changes.bg ?? null,
+    eventTypeId,
+    optionId
+  );
+}
+
+export function deleteEventOption(eventTypeId: string, optionId: string) {
+  // Deleting a choice also deletes the history that references it: event_log
+  // links the exact type/option pair with no cascade, so its rows are removed
+  // explicitly in the same transaction.
+  db.withTransactionSync(() => {
+    db.runSync(
+      'DELETE FROM event_log WHERE event_type_id = ? AND option_id = ?',
+      eventTypeId,
+      optionId
+    );
+    db.runSync(
+      'DELETE FROM event_options WHERE event_type_id = ? AND id = ?',
+      eventTypeId,
+      optionId
+    );
+  });
+}
+
+export function reorderEventOptions(eventTypeId: string, optionIds: string[]) {
+  db.withTransactionSync(() => {
+    optionIds.forEach((optionId, sortOrder) => {
+      db.runSync(
+        'UPDATE event_options SET sort_order = ? WHERE event_type_id = ? AND id = ?',
+        sortOrder,
+        eventTypeId,
+        optionId
+      );
+    });
+  });
+}
+
+export function getEventOptionLogCount(eventTypeId: string, optionId: string): number {
+  const row = db.getFirstSync<{ count: number }>(
+    'SELECT COUNT(*) AS count FROM event_log WHERE event_type_id = ? AND option_id = ?',
+    eventTypeId,
+    optionId
+  );
+
+  return row?.count ?? 0;
+}
+
+export function nextEventOptionId(eventTypeId: string, label: string): string {
+  const base =
+    label
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '') || 'option';
+
+  const taken = new Set(
+    db
+      .getAllSync<{ id: string }>(
+        'SELECT id FROM event_options WHERE event_type_id = ?',
+        eventTypeId
+      )
+      .map((row) => row.id)
+  );
+
+  if (!taken.has(base)) {
+    return base;
+  }
+
+  let counter = 2;
+  while (taken.has(`${base}-${counter}`)) {
+    counter += 1;
+  }
+
+  return `${base}-${counter}`;
 }
 
 type RecentEventRow = {

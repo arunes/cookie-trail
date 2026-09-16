@@ -26,11 +26,11 @@ The migration seeds exactly one pet named `My Pet`, using Unix epoch millisecond
 
 Defines event categories. Its text primary key supports stable identifiers such as `system.pee`. It stores `label`, icon name, foreground/background colors, and integer boolean flags for system, hidden, and predictable state.
 
-The seed contains Pee and Poop as predictable and Food, Water, and Exercise as not predictable. Event Types do not contain `pet_id`; they are definitions rather than pet history. Event Type reads use `sort_order`, and a transactional update function is available for the future reorder screen.
+The seed contains Pee and Poop as predictable and Food, Water, and Exercise as not predictable. Event Types do not contain `pet_id`; they are definitions rather than pet history. Event Type reads use `sort_order`; reads can include hidden types, and single-type read, update, and delete functions exist for the edit screen. Deleting a custom type removes its `event_log` rows explicitly in the same transaction and cascades to its options; the delete statement is guarded with `is_system = 0`.
 
 ### `event_options`
 
-Defines choices belonging to an Event Type. The composite primary key is `(event_type_id, id)`, allowing option identifiers such as `success` to be reused by different types. Optional icon/color/background/swipe direction fields control presentation and interaction, and `sort_order` orders options. Deleting an Event Type cascades to its options at the schema level.
+Defines choices belonging to an Event Type. The composite primary key is `(event_type_id, id)`, allowing option identifiers such as `success` to be reused by different types. Optional icon/color/background/swipe direction fields control presentation and interaction, and `sort_order` orders options. New options receive a slug-derived id unique within their type. Deleting an Event Type cascades to its options at the schema level. Options can be added, updated, reordered transactionally, and deleted by the edit screen; deleting an option removes the `event_log` rows referencing the type/option pair in the same transaction.
 
 ### `event_log`
 
@@ -45,8 +45,8 @@ All application timestamps must be SQLite `INTEGER` values containing Unix epoch
 ## Known gaps and cautions
 
 - Recent and full-history reads are scoped to the default pet and join event definitions/options for presentation. Full history is fetched in bounded batches as the user scrolls.
-- Foreign-key constraints are declared, but application initialization does not explicitly enable or verify SQLite foreign-key enforcement.
-- Custom Event Type lifecycle, including archival when log rows reference a definition, has not been designed or implemented.
+- Foreign-key constraints are declared and enabled at startup via `PRAGMA foreign_keys = ON`; deleting a custom event type relies on the option cascade and explicit history deletion.
+- Custom Event Type creation and archival (retaining history while removing a definition) remain undesigned; the implemented policy deletes history together with the definition.
 
 ## Decided evolution policy
 

@@ -1,5 +1,5 @@
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { Pressable, ScrollView, Text, useWindowDimensions, View } from 'react-native';
 import Sortable, { type SortableFlexDragEndCallback } from 'react-native-sortables';
@@ -17,14 +17,16 @@ type EventRowProps = {
 
 function EventRow({ event, index, lastIndex, width }: EventRowProps) {
   return (
-    <View
-      className={`h-[72px] flex-row items-center border-x border-border bg-surface px-4 ${
+    <Pressable
+      onPress={() => router.push({ pathname: '/edit-event', params: { id: event.id } })}
+      className={`h-[72px] flex-row items-center border-x border-border bg-surface px-4 active:opacity-80 ${
         index === 0 ? 'rounded-t-2xl border-t' : ''
       } ${index === lastIndex ? 'rounded-b-2xl border-b' : 'border-b'}`}
       style={{ width }}
       accessible
+      accessibilityRole="button"
       accessibilityLabel={`${event.label} event`}
-      accessibilityHint="Long press, then drag to reorder">
+      accessibilityHint="Opens the event editor. Long press, then drag to reorder">
       <Ionicons name="reorder-three" size={25} color={colors['icon-muted']} />
 
       <View
@@ -35,16 +37,24 @@ function EventRow({ event, index, lastIndex, width }: EventRowProps) {
 
       <Text className="ml-3 flex-1 text-[16px] font-semibold text-foreground">{event.label}</Text>
       <Text className="text-[13px] text-foreground-muted">
-        {event.isSystem ? 'System' : 'Custom'}
+        {event.isHidden ? 'Hidden' : event.isSystem ? 'System' : 'Custom'}
       </Text>
-    </View>
+      <Ionicons name="chevron-forward" size={20} color={colors['icon-muted']} className="ml-2" />
+    </Pressable>
   );
 }
 
 export default function EventSettings() {
-  const [events, setEvents] = useState(getEventTypes);
+  // Hidden events stay manageable here; Home filters them out instead.
+  const [events, setEvents] = useState(() => getEventTypes(true));
   const { width: screenWidth } = useWindowDimensions();
   const listWidth = screenWidth - 32;
+
+  useFocusEffect(
+    useCallback(() => {
+      setEvents(getEventTypes(true));
+    }, [])
+  );
 
   const handleDragEnd = useCallback<SortableFlexDragEndCallback>(
     ({ order }) => {
@@ -75,7 +85,7 @@ export default function EventSettings() {
         Event Settings
       </Text>
       <Text className="mt-1 text-[13px] text-foreground-muted">
-        Long press an event and drag to change its order on Home.
+        Tap an event to edit it. Long press and drag to change its order on Home.
       </Text>
 
       <View className="mt-6">

@@ -15,6 +15,15 @@ const toastConfig: ToastConfig = {
       </Text>
     </View>
   ),
+
+  status: ({ text1, text2 }) => (
+    <View style={styles.container}>
+      <Text style={styles.primary}>
+        {text1}
+        {text2 ? <Text style={styles.time}>{` · ${text2}`}</Text> : null}
+      </Text>
+    </View>
+  ),
 };
 
 export function ToastHost() {
